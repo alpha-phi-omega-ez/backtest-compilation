@@ -1,0 +1,26 @@
+Unlikely CLASS name listed as PHYS-1600: Materials Science (REPRINT)
+Duplicate CLASS in CHEM: 2540
+Invalid CLASS in CSCI: (DELETE) CSCI-1190 Beginning C Programming for Engineers
+Invalid CLASS in ISCI: ISCI 1600 Materials Science
+Crosslisted CLASS: Bioethics is STSH-4250 and PHIL-2500
+File in MGMT folder is not a CLASS: MGMT-2100 CSF09.pdf
+Unlikely CLASS name listed as MATH-4300: Introduction to Complex Variables_ Theory and Applications
+Duplicate CLASS in MANE: 2720
+Duplicate CLASS in MANE: 4350
+Unlikely CLASS name listed as MANE-6170: Mechanics of Solids (digital only)
+Unlikely CLASS name listed as MANE-6520: Fluid Mechanics (digital only)
+Invalid CLASS in ISYE: ISYE-4961
+Crosslisted CLASS: Probability Theory and Applications is MATP-4600 and ISYE-4750
+Crosslisted CLASS: Investigating Society is STSS-2100 and IHSS-2100
+Crosslisted CLASS: Introduction to Geochemistry is CHEM-2540 and ERTH-2140
+Unlikely CLASS name listed as ERTH-4500: Earth_s Climate
+Folder in ENGR-2090: +McFarlane
+Folder in ENGR-2090: +Tichy
+Folder in ENGR-2090: +Laflin
+Folder in ENGR-2090: +Shahsavari
+Unlikely CLASS name listed as ECSE-4220: VLSI DESIGN
+Crosslisted CLASS: Mechatronics is MANE-4520 and ECSE-4090
+Duplicate CLASS in BMED: 2540
+Unlikely CLASS name listed as BEAR-1250: - Introductory Bearodynamics
+Duplicate CLASS in BEAR: 1250
+If a course is known to exist but its name is listed as 'unlikely', please add it to unlikely_exceptions.txt

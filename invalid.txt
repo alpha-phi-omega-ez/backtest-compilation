@@ -1,0 +1,146 @@
+Invalid filename in PHYS-2210: PHYS-2100 E3F11.pdf
+Invalid filename in PHYS-2210: PHYS-2100 E1F11.pdf
+Invalid filename in PHYS-2210: PHYS-2100 E1F08.pdf
+Invalid filename in PHYS-2210: PHYS-2100 E2F11.pdf
+Invalid filename in CHEM-4410: CHEM4410 M4F10.pdf
+Invalid filename in CHEM-4410: CHEM4410 Quizzes,F19.pdf
+Invalid filename in CHEM-2250: CHEM-2230 Q1F19.pdf
+Invalid filename in BIOL-4760: delete.pdf
+Invalid filename in BIOL-4760: DELETE.pdf
+Invalid filename in BIOL-4760: DELETE.pdf
+Invalid filename in BIOL-4760: DELETE.pdf
+Invalid filename in BIOL-4760: DELETE.pdf
+Invalid filename in BIOL-4760: DELETE.pdf
+Invalid filename in BIOL-4620: DELETEBIOL-4620 E2S16_(1).pdf
+Invalid filename in BIOL-4350: DELETEBIOL-4350 E1F14 (2).pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E3F11(1).pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E3F11.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E3F10.pdf
+Invalid filename in BIOL-2500: DELETE.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E2F15.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E2F11A.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E2F11.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E2F10.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E1F12.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E1F11.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E1F10.pdf
+Invalid filename in BIOL-2500: BIOL-2500 Q(1,2,3,4,6,7)F10.pdf
+Invalid filename in BIOL-2500: DELETEBIOL-2500 E4F15.pdf
+Invalid filename in BIOL-2120: DELETEBIOL-2120 E4S17 (Rutledge).pdf
+Invalid filename in BIOL-2120: DELETEBIOL-2120 E4S16 (Rutledge).pdf
+Invalid filename in BIOL-2120: DELETEBIOL-2120 E3S17 (Rutledge).pdf
+Invalid filename in BIOL-2120: DELETEBIOL-2120 E3S16 (Rutledge).pdf
+Invalid filename in BIOL-2120: DELETE.pdf
+Invalid filename in BIOL-2120: DELETEBIOL-2120 E1S17 (Rutledge).pdf
+Invalid filename in ARTS-2380: ARTS 1440 E1 F17.pdf
+Invalid filename in CSCI-4490: CSCI-4490 FS08.pdf
+Invalid filename in CSCI-4430: CSCI-4430 F1F08.pdf
+Invalid filename in CSCI-2600: CSCI-2600 M2F18 (1).pdf
+Invalid filename in CSCI-2600: CSCI-2600 M2F18.pdf
+Invalid filename in CSCI-2600: CSCI-2600 E1f17.pdf.pdf
+Invalid filename in CSCI-2400: CSCI-2400 FS07.pdf
+Invalid filename in CSCI-2300: CSCI-2300 E1.pdf
+Invalid filename in CSCI-2300: CSCI-2300 E1 (All).pdf
+Invalid filename in CSCI-2200: CSCI-2200 M14.pdf
+Invalid filename in CSCI-2200: (DELETE) CSCI-2200 M14 (2).pdf
+Invalid filename in CSCI-1200: (DELETE) CSCI-1200 FS19.pdf
+Invalid filename in CSCI-1200: (DELETE) CSCI-1200 E1S17.pdf
+Invalid filename in PSYC-2800: PSYC-2800 Q1.pdf
+Invalid filename in PSYC-2310: PYSC-2310 E2F17.pdf
+Invalid filename in MGMT-2430: MGMT-2430 M.pdf
+Invalid filename in MGMT-1260: MGMT-1260 FS10.pdf
+Invalid filename in MGMT-1210: MGMT1210H2F18.pdf
+Invalid filename in MGMT-1210: MGMT1210H1F18.pdf
+Invalid filename in MATP-4600: ISYE-4750 Q3F09.pdf
+Invalid filename in MATH-2400: MATH 2010 E3F19.pdf
+Invalid filename in MATH-2400: MATH-2400 Final F15.pdf
+Invalid filename in MATH-4100: MATH 4100 FinalF15.pdf
+Invalid filename in MANE-4961: MANE-4961 H3F16.pdf
+Invalid filename in MANE-4961: MANE-4961 H1F16.pdf
+Invalid filename in MANE-4961: MANE-4961 H2F16.pdf
+Invalid filename in MANE-4400: MANE-4400 H1S15.pdf
+Invalid filename in MANE-4400: MANE-4400 H2S16.pdf
+Invalid filename in MANE-4240: Copy of MANE-4240 E1S18.pdf
+Invalid filename in MANE-4080: MANE-4080 HW6F15.pdf
+Invalid filename in MANE-4080: MANE-4080 HW5F15.pdf
+Invalid filename in MANE-4080: MANE-4080 HW1F15.pdf
+Invalid filename in MANE-4080: MANE-4080 HW3F15.pdf
+Invalid filename in MANE-4080: MANE-4080 FEF18.pdf
+Invalid filename in MANE-4080: MANE-4080 FEF09.pdf
+Invalid filename in MANE-4070: MANE-4070 F20 (Hirsa).pdf
+Invalid filename in MANE-4070: MANE-4070 E1.pdf
+Invalid filename in MANE-4040: MANE 4040 HW5_6 S10.pdf
+Invalid filename in MANE-4030: MANE-4030 UNKN2.pdf
+Invalid filename in MANE-4030: MANE-4030 UNKN1.pdf
+Invalid filename in MANE-4420: MANE-4420 H3F15.pdf
+Invalid filename in MANE-6170: DELETE.pdf
+Invalid filename in MANE-6170: DELETE.pdf
+Invalid filename in ITWS-2110: ITWS-2110 E211.pdf
+Invalid filename in ISYE-4250: ISYE-4250 FS19.pdf
+Invalid filename in ISYE-4240: ISYE-4240 H2S12.pdf
+Invalid filename in ERTH-4710: ERTH-4710 H1F18.pdf
+Invalid filename in ERTH-1100: ERTH-1100 Q5E15.pdf
+Invalid filename in ENVE-4350: ENVE-4350 FF18.pdf
+Invalid filename in ENVE-4350: ENVE-4350 FF18(1).pdf
+Invalid filename in ENVE-4350: ENVE-4350 FF18(2).pdf
+Invalid filename in ENVE-4340: ENVE-4340 H6S10.pdf
+Invalid filename in ENVE-4340: ENVE-4340 H7S10.pdf
+Invalid filename in ENVE-4340: ENVE-4340 H1S10.pdf
+Invalid filename in ENVE-4330: ENVE 4330 FF18.pdf
+Invalid filename in ENVE-4320: ENVE-4320 H3S10.pdf
+Invalid filename in ENVE-4320: ENVE-4320 H2S10.pdf
+Invalid filename in ENVE-4320: ENVE-4320 H1S10.pdf
+Invalid filename in ENVE-4320: ENVE-4320 H5S10.pdf
+Invalid filename in ENGR-2250: ENGR-2250 FEF17 (Tekawade)
+Invalid filename in ENGR-2530: DELETE
+Invalid filename in ENGR-1600: ENGR-2090 E1F18.pdf
+Invalid filename in ECSE-6400: ECSE E2F12.pdf
+Invalid filename in ECSE-2660: ECSE-2660 M2S14 (2).pdf
+Invalid filename in ECSE-2660: ECSE-2660 M2S14.pdf
+Invalid filename in ECSE-2410: ECSE-2410 Q0S14.pdf
+Invalid filename in ECSE-2110: ECSE-2110 FF17.pdf
+Invalid filename in ECSE-2110: ECSE-2110 FS18 (Without answers).pdf
+Invalid filename in ECSE-2110: ECSE-2110 FS19.pdf
+Invalid filename in ECSE-2110: ECSE-2110 FF18.pdf
+Invalid filename in ECSE-2110: ECSE-2110 FS18.pdf
+Invalid filename in ECSE-2050: ESCE-2050 E1F10.pdf
+Invalid filename in ECSE-2010: ECSE-2010 MidtermU12.pdf
+Invalid filename in ECSE-4500: ECSE-4500 FS08.pdf
+Invalid filename in ECSE-4500: ECSE-4500 FS08(1).pdf
+Invalid filename in ECON-4570: ECON-4570 H3F12.pdf
+Invalid filename in ECON-4210: ECON-4210 H1S12.pdf
+Invalid filename in ECON-4210: ECON-4210 H2S12.pdf
+Invalid filename in ECON-1200: IHSS-1200 E3F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q14F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q13F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q10F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q9F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q8F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q7F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q4F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q3F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q2F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q1F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 E2F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 E1F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q17F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q16F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 E4F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q15F21.pdf
+Invalid filename in ECON-1200: IHSS-1200 Q6F21.pdf
+Invalid filename in CIVL-6530: DELETE.pdf
+Invalid filename in CIVL-6530: CIVL-6530 FS13.pdf
+Invalid filename in CIVL-6530: CIVL-6530 FS17.pdf
+Invalid filename in CIVL-6530: CIVL-6530 FF15.pdf
+Invalid filename in CIVL-4150: DELETE.pdf
+Invalid filename in CIVL-4140: DELETE.pdf
+Invalid filename in CIVL-4140: DELETE.pdf
+Invalid filename in CIVL-4140: DELETE.pdf
+Invalid filename in BMED-4650: BMED-4650 Q1XX.pdf
+Invalid filename in BMED-4650: BMED-4650 FS18.pdf
+Invalid filename in BMED-2300: BMED-2300 FF14 16-Feb-2021 17-54-40.pdf
+Invalid filename in BMED-4540: BMED-4540 HW2F19.pdf
+Invalid filename in BMED-4540: BMED-4540 HW3F19.pdf
+Invalid filename in BEAR-2100: 1680125715449456399487256848621.jpg
+Invalid filename in BEAR-2100: BEAR-2100 E322.pdf
+Invalid year in BEAR-1250: BEAR-1250 Q1S69.pdf
