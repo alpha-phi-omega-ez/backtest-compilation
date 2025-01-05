@@ -3,29 +3,54 @@ import datetime
 import os.path
 import re
 import sys
+import json
+from typing import Any
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+import pymongo
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly"]
 
+CONFIG = json.load(open("config/config.json"))
 
-def get_recursive_structure(service, fileid):
+examtype_mapping = {
+    "Q": "Quiz",
+    "E": "Exam",
+    "M": "Midterm",
+}
+
+exam_date_mapping = {
+    "F": "Fall",
+    "S": "Spring",
+    "U": "Summer",
+    "SU": "Summer",
+}
+
+
+def get_recursive_structure(service, fileid, sharedDrive) -> dict:
     structure = {}
     # Use Google's API to get a complete list of the children in a folder (Google's 'service.files()' function gives a COMPLETE LIST of ALL files in your drive)
-    results = (
-        service.files()
-        .list(
-            q=f"'{fileid}' in parents",
-            supportsAllDrives=True,
-            includeItemsFromAllDrives=True,
-        )
-        .execute()
-    )
+
+    for _ in range(3):
+        try:
+            results = (
+                service.files()
+                .list(
+                    q=f"'{fileid}' in parents",
+                    corpora="drive",
+                    driveId=sharedDrive,
+                    supportsAllDrives=True,
+                    includeItemsFromAllDrives=True,
+                )
+                .execute()
+            )
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
+
     # Results is returned as a dict
     for item in results["files"]:
         structure[item["id"]] = {
@@ -35,11 +60,12 @@ def get_recursive_structure(service, fileid):
         if structure[item["id"]]["folder"]:
             # Get the children using the same exact function
             structure[item["id"]]["children"] = get_recursive_structure(
-                service, item["id"]
+                service, item["id"], sharedDrive
             )
         else:
             # Used as a way to tell this is not a folder
             structure[item["id"]]["children"] = None
+
     return structure
 
 
@@ -50,7 +76,7 @@ def interpret_backtests(
     invalid_filename_output=None,
     rename_filename_output=None,
     unlikely_filename="unlikely_exceptions.txt",
-):
+) -> Any:
     # Handles opening files;
     # files are not opened twice and each opened file is put into open_files
     open_files = {}
@@ -92,7 +118,8 @@ def interpret_backtests(
     # This will be returned, containing all the backtests
     # with valid names in valid classes
     # Results will be a dict that has the keys of classname, dept, classnum, examnum, examtype, semester, and year
-    results = []
+    old_results = []
+    results = {}
 
     # Stop 'unlikely CLASS name' spam by creating a set of removed CLASS names
     unlikely = False
@@ -125,7 +152,7 @@ def interpret_backtests(
                     continue
                 classes[cid]["name"]
                 match = re.search(
-                    "(^\*?)([A-Z]{4})-([0-9]{4}) (.+)$", classes[cid]["name"]
+                    r"(^\*?)([A-Z]{4})-([0-9]{3}[0-9X]) (.+)$", classes[cid]["name"]
                 )
                 if match == None:
                     efile.write(f"Invalid CLASS in {dptname}: {classes[cid]['name']}\n")
@@ -148,13 +175,14 @@ def interpret_backtests(
                     efile.write(
                         f"Unlikely CLASS name listed as {dptname}-{classnum}: {classname}\n"
                     )
-                if classname not in all_classnames:
-                    all_classnames[classname] = (dptname, classnum)
+                full_classname = classnum + " " + classname
+                if full_classname not in all_classnames:
+                    all_classnames[full_classname] = (dptname, classnum)
                 else:
-                    dptname2, classnum2 = all_classnames[classname]
+                    dptname2, classnum2 = all_classnames[full_classname]
                     if dptname2 != dptname:
                         cfile.write(
-                            f"Crosslisted CLASS: {classname} is {dptname2}-{classnum2} and {dptname}-{classnum}\n"
+                            f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} and {dptname}-{classnum}\n"
                         )
                 files = classes[cid]["children"]
                 for fid in files.keys():
@@ -176,7 +204,7 @@ def interpret_backtests(
                         + dptname_lower
                         + ")(-| )?"
                         + classnum
-                        + "( |_|-)?( |_|-)?( |_|-)?)?(M1?|E[1-9]|Q|Q[1-9][0-9]?) ?(F|S|U|S[uU])([0-9]{2})(.*?)(\.pdf)?$"
+                        + r"( |_|-)?( |_|-)?( |_|-)?)?(M1?|E[1-9]|Q|Q[1-9][0-9]?) ?(F|S|U|S[uU])([0-9]{2})(.*?)(\.pdf)?$"
                     )
                     match = re.match(class_start, files[fid]["name"])
                     if match == None:
@@ -204,17 +232,45 @@ def interpret_backtests(
                         rffile.write(
                             f"Correct the name of file with id <{fid}> from <{files[fid]['name']}> to <{correct_filename}>\n"
                         )
-                    results.append(
+                    old_results.append(
                         {
-                            "classname": classname,
+                            "classname": classnum + " " + classname,
                             "dept": dptname,
-                            "classnum": classnum,
-                            "examtype": exam_num[0],
-                            "examnum": exam_num[1:],
-                            "semester": semester,
-                            "year": year,
+                            "examtype": (
+                                examtype_mapping[exam_num[0].upper()]
+                                + " "
+                                + exam_num[1:]
+                            ).strip(),
+                            "semester": exam_date_mapping[semester.upper()]
+                            + " 20"
+                            + year,
                         }
                     )
+                    examtype = (
+                        examtype_mapping[exam_num[0].upper()] + " " + exam_num[1:]
+                    ).strip()
+                    examsemester = exam_date_mapping[semester.upper()] + " 20" + year
+                    if classnum + " " + classname in results:
+                        inserted = False
+                        for exam in results[classnum + " " + classname]:
+                            if exam["type"] == examtype:
+                                exam["tests"].append(examsemester)
+                                inserted = True
+                                break
+                        if not inserted:
+                            results[classnum + " " + classname].append(
+                                {
+                                    "type": examtype,
+                                    "tests": [examsemester],
+                                }
+                            )
+                    else:
+                        results[classnum + " " + classname] = [
+                            {
+                                "type": examtype,
+                                "tests": [examsemester],
+                            }
+                        ]
     if unlikely:
         efile.write(
             f"If a course is known to exist but its name is listed as 'unlikely', please add it to {unlikely_filename}\n"
@@ -223,40 +279,130 @@ def interpret_backtests(
     for file in open_files.values():
         file.close()
 
-    return results
+    return results, all_dpts, all_classnames
 
 
-def main():
+type_order = {"Quiz": 1, "Exam": 2, "Midterm": 3}
+season_order = {"Spring": 1, "Summer": 2, "Fall": 3}
+
+
+# Sort the exams by type and tests by date
+def sort_key(exam: dict) -> tuple[int, int | float]:
+    type_parts = exam["type"].split()
+    type_prefix = type_parts[0]
+    type_number = type_parts[1] if len(type_parts) > 1 else "0"
+    return (
+        type_order[type_prefix],
+        int(type_number) if type_number.isdigit() else float("inf"),
+    )
+
+
+def sort_tests(tests: list[str]) -> list[str]:
+    return sorted(
+        tests,
+        key=lambda x: (int(x.split()[1]), season_order[x.split()[0]]),
+        reverse=True,
+    )
+
+
+def add_to_mongo(results: dict, all_dpts: set, all_classnames: dict) -> None:
+    client = pymongo.MongoClient(CONFIG["MONGO_URI"])
+    db = client["apo_main"]
+    backtest_course_code_collection = db["backtest_course_code_collection"]
+    backtest_courses_collection = db["backtest_courses_collection"]
+    backtest_collection = db["backtest_collection"]
+
+    existing_codes = set(
+        item["course_code"] for item in backtest_course_code_collection.find()
+    )
+
+    codes_to_add = all_dpts - existing_codes
+    codes_to_remove = existing_codes - all_dpts
+
+    if codes_to_add:
+        backtest_course_code_collection.insert_many(
+            [{"course_code": code} for code in codes_to_add]
+        )
+
+    if codes_to_remove:
+        backtest_course_code_collection.delete_many(
+            {"course_code": {"$in": list(codes_to_remove)}}
+        )
+
+    existing_classes = set(item["name"] for item in backtest_courses_collection.find())
+
+    classnames = set(all_classnames.keys())
+    classes_to_add = classnames - existing_classes
+    classes_to_remove = list(existing_classes - classnames)
+
+    if classes_to_add:
+        backtest_courses_collection.insert_many(
+            [
+                {"name": classname, "course_code": all_classnames[classname][0]}
+                for classname in classes_to_add
+            ]
+        )
+        print(f"Added class names {classes_to_add}")
+
+    if classes_to_remove:
+        backtest_courses_collection.delete_many({"name": {"$in": classes_to_remove}})
+
+        class_backtests_to_remove = set(
+            item["_id"]
+            for item in backtest_courses_collection.find(
+                {"name": {"$in": classes_to_remove}}
+            )
+        )
+        backtest_collection.delete_many(
+            {"course_ids": {"$in": list(class_backtests_to_remove)}}
+        )
+
+    current_courses = {}
+    for course in backtest_courses_collection.find():
+        current_courses[course["name"]] = course["_id"]
+
+    for classname, exams in results.items():
+        current_course = backtest_courses_collection.find_one({"name": classname})
+        if not current_course:
+            raise ValueError(f"Course {classname} not found in database")
+        current_tests = backtest_collection.find_one(
+            {"course_ids": {"$in": [current_course["_id"]]}}
+        )
+
+        for exam in exams:
+            exam["tests"] = sort_tests(exam["tests"])
+
+        exams.sort(key=sort_key)
+
+        if not current_tests:
+            course_id = current_courses[classname]
+            course_ids = [course_id]
+
+            backtest_collection.insert_one({"tests": exams, "course_ids": course_ids})
+            print(f"Added tests {classname}")
+
+        elif current_tests["tests"] != exams:
+            backtest_collection.update_one(
+                {"_id": current_tests["_id"]}, {"$set": {"tests": exams}}
+            )
+            print(f"Updated tests {classname}")
+
+
+def main() -> None:
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.
     """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+
+    credentials = service_account.Credentials.from_service_account_file(
+        "config/service-credentials.json", scopes=SCOPES
+    )
+
+    delegated_creds = credentials.with_subject(CONFIG["DELEGATE_EMAIL"])
 
     try:
-        service = build("drive", "v3", credentials=creds)
+        service = build("drive", "v3", credentials=delegated_creds)
 
-        parser = argparse.ArgumentParser(
-            description="Compile backtests from Google. May require you to sign into your Google account."
-        )
-        parser.add_argument(
-            "folder_id",
-            help="The id of the base backtest folder according to Google. For example, the id of the folder at https://drive.google.com/drive/u/0/folders/0AJ1INTLLjH1EUk9PVA is 0AJ1INTLLjH1EUk9PVA.",
-        )
+        parser = argparse.ArgumentParser(description="Compile backtests from Google.")
         parser.add_argument(
             "-e",
             "--error_file",
@@ -300,21 +446,13 @@ def main():
 
         args = parser.parse_args()
 
-        folder_id = args.folder_id
+        folder_id = CONFIG["FOLDER_ID"]
 
-        # DEBUG CODE: DO NOT USE THIS UNLESS YOU ARE TESTING
-        # if os.path.exists('structure.pkl'):
-        #   with open('structure.pkl', "rb") as file:
-        #     structure = pickle.load(file)
-        # else:
-        #   with open('structure.pkl', "wb") as file:
-        #     structure = get_recursive_structure(service, folder_id)
-        #     pickle.dump(structure, file)
-        structure = get_recursive_structure(service, folder_id)
+        structure = get_recursive_structure(service, folder_id, folder_id)
 
         # This function is based off the fact that structure is constructed with an 'id' based off of the Google Drive id
         # If the backtest drive is ever moved off of Google Drive into a physical filesystem or elsewhere, I recommend to change get_recursive_structure so that the id stored is the complete path of the file
-        all_backtests = interpret_backtests(
+        all_backtests, all_dpts, all_classnames = interpret_backtests(
             structure,
             error_output=args.error_file,
             crosslisted_output=args.crosslisted_file,
@@ -322,6 +460,11 @@ def main():
             rename_filename_output=args.rename_file,
             unlikely_filename=args.unlikely_file,
         )
+
+        with open("backtests_mongo.json", "w") as f:
+            json.dump(all_backtests, f, indent=4)
+
+        add_to_mongo(all_backtests, all_dpts, all_classnames)
 
     except HttpError as error:
         # TODO(developer) - Handle errors from drive API.
