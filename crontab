@@ -1,0 +1,2 @@
+18 11,14,17 * * 1-5 root /usr/bin/python3 /app/main.py
+18 17 * * 0,6 root /usr/bin/python3 /app/main.py
