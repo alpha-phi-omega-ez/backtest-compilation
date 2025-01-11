@@ -164,4 +164,3 @@ config/
 *.json
 *DS_Store
 !requirements.txt
-!unlikely_exceptions.txt
