@@ -1,5 +1,0 @@
-MultiRotor UAVs
-Managing IT Resources
-BioMEMs
-Programming for BME
-Bearodynamics
