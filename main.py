@@ -89,12 +89,12 @@ def interpret_backtests(
     # Handles opening files;
     # files are not opened twice and each opened file is put into open_files
     open_files = {}
-    if error_output != None:
+    if error_output is not None:
         efile = open(error_output, "w")
         open_files[error_output] = efile
     else:
         efile = stdout
-    if invalid_filename_output != None:
+    if invalid_filename_output is not None:
         if invalid_filename_output in open_files:
             iffile = open_files[invalid_filename_output]
         else:
@@ -102,7 +102,7 @@ def interpret_backtests(
             open_files[invalid_filename_output] = iffile
     else:
         iffile = stdout
-    if crosslisted_output != None:
+    if crosslisted_output is not None:
         if crosslisted_output in open_files:
             cfile = open_files[crosslisted_output]
         else:
@@ -123,10 +123,10 @@ def interpret_backtests(
     current_year = date.today().year % 100
     for did in structure.keys():
         # Filter out files in the root directory which are do not represent current departments
-        if structure[did]["children"] != None and len(structure[did]["name"]) <= 6:
+        if structure[did]["children"] is not None and len(structure[did]["name"]) <= 6:
             match = find_department.search(structure[did]["name"])
             # Expects some text before four capital letters
-            if match == None:
+            if match is None:
                 efile.write(f"Invalid DEPARTMENT: {structure[did]['name']}\n")
                 continue
             dptname = match.group(2)
@@ -136,14 +136,14 @@ def interpret_backtests(
 
             classes = structure[did]["children"]
             for cid in classes.keys():
-                if classes[cid]["children"] == None:
+                if classes[cid]["children"] is None:
                     efile.write(
                         f"File in {dptname} folder is not a CLASS: {classes[cid]['name']}\n"
                     )
                     continue
 
                 match = find_classname.search(classes[cid]["name"])
-                if match == None:
+                if match is None:
                     efile.write(f"Invalid CLASS in {dptname}: {classes[cid]['name']}\n")
                     continue
                 elif match.group(2) != dptname:
@@ -170,7 +170,7 @@ def interpret_backtests(
 
                 files = classes[cid]["children"]
                 for fid in files.keys():
-                    if files[fid]["children"] != None:
+                    if files[fid]["children"] is not None:
                         efile.write(
                             f"Folder in {dptname}-{classnum}: {files[fid]['name']}\n"
                         )
@@ -192,7 +192,7 @@ def interpret_backtests(
                     )
 
                     match = re.match(class_start, files[fid]["name"])
-                    if match == None:
+                    if match is None:
                         iffile.write(
                             f"Invalid filename in {dptname}-{classnum}: {files[fid]['name']}\n"
                         )
