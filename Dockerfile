@@ -1,14 +1,10 @@
-# Use the official Python 3.12 image based on Alpine
-FROM python:3.13.1-alpine3.21
+# Use the latest uv image with python 3.13 and alpine
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
-# Install uv.
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Set the working directory
 WORKDIR /app
 
-COPY pyproject.toml .
-COPY uv.lock .
-COPY .python-version .
+COPY uv.lock, .python-version, pyproject.toml ./
 
 RUN uv sync --frozen --no-cache
 
@@ -22,9 +18,6 @@ COPY crontab /etc/crontabs/root
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/crontabs/root
-
-# Create the log file to be able to run tail
-RUN touch /var/log/cron.log
 
 # Run the command on container startup
 CMD ["crond", "-f", "-l", "2"]
