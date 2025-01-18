@@ -1,2 +1,2 @@
-18 11,14,17 * * 1-5 root /usr/bin/python3 /app/main.py
-18 17 * * 0,6 root /usr/bin/python3 /app/main.py
+18 11,14,17 * * 1-5 root /app/.venv/bin/python /app/main.py >> /proc/1/fd/1 2>> /proc/1/fd/2
+18 17 * * 0,6 root /app/.venv/bin/python /app/main.py >> /proc/1/fd/1 2>> /proc/1/fd/2
