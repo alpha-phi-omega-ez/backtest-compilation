@@ -27,7 +27,7 @@ class MongoClient:
         self.backtest_collection = self.database.get_collection("backtest_collection")
         self.logger = logger
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """
         Close the MongoDB client.
         """
