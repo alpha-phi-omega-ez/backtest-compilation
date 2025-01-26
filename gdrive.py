@@ -1,4 +1,6 @@
 import asyncio
+import json
+import sys
 from logging import Logger
 from os import path
 
@@ -29,6 +31,53 @@ class GoogleDriveClient:
         delegated_creds = credentials.with_subject(settings["DELEGATE_EMAIL"])
         self.service = build("drive", "v3", credentials=delegated_creds)
         self.logger = logger
+
+    async def cache_check(self, structure: dict) -> bool:
+        """
+        Check if the cache is up to date.
+
+        :param structure: Structure of the backtest drive.
+        """
+
+        if not path.exists(path.join(path.dirname(__file__), "structure.json")):
+            await self.update_cache(structure)
+            return False
+
+        with open(path.join(path.dirname(__file__), "structure.json"), "r") as f:
+            cache = json.load(f)
+
+        check = cache == structure
+
+        if not check:
+            await self.update_cache(structure)
+
+        return check
+
+    async def update_cache(self, structure: dict) -> None:
+        """
+        Update the cache with the structure of the backtest drive in Google Drive.
+
+        :param structure: Structure of the backtest drive.
+        """
+
+        with open(path.join(path.dirname(__file__), "structure.json"), "w") as f:
+            json.dump(structure, f)
+
+    async def get_structure(self, fileid: str, sharedDrive: str) -> dict:
+        """
+        Get the structure of the backtest drive in Google Drive.
+
+        :param fileid: ID of the file to get the structure.
+        :param sharedDrive: ID of the shared drive.
+        """
+
+        structure = await self.get_recursive_structure(fileid, sharedDrive)
+
+        if self.cache_check(structure):
+            self.logger.info("Cache is the same as the current structure")
+            sys.exit(0)
+
+        return structure
 
     async def get_recursive_structure(self, fileid: str, sharedDrive: str) -> dict:
         """
