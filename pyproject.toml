@@ -12,3 +12,7 @@ dependencies = [
     "motor>=3.6.1",
     "python-dotenv>=1.0.1",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+fixable = ["I"]

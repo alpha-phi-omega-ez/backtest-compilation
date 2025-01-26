@@ -1,6 +1,7 @@
-from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 from logging import Logger
+
+from motor.motor_asyncio import AsyncIOMotorClient
 
 type_order = {"Quiz": 1, "Exam": 2, "Midterm": 3}
 season_order = {"Spring": 1, "Summer": 2, "Fall": 3}

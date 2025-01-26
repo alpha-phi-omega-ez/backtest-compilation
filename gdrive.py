@@ -1,6 +1,6 @@
-from os import path
 import asyncio
 from logging import Logger
+from os import path
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -40,7 +40,9 @@ class GoogleDriveClient:
 
         self.logger.debug(f"Getting recursive structure for {fileid}")
         structure = {}
-        # Use Google's API to get a complete list of the children in a folder (Google's 'service.files()' function gives a COMPLETE LIST of ALL files in your drive)
+        # Use Google's API to get a complete list of the children in a folder
+        # (Google's 'service.files()' function gives a COMPLETE LIST
+        # of ALL files in your drive)
 
         for attempt in range(3):
             try:
@@ -102,15 +104,18 @@ class GoogleDriveClient:
                     supportsAllDrives=True,
                 ).execute()
                 self.logger.info(
-                    f"Renamed file with id <{file_id}> from <{old_name}> to <{new_name}>"
+                    f"Renamed file with id <{file_id}> from "
+                    f"<{old_name}> to <{new_name}>"
                 )
                 break
             except HttpError as error:
                 if attempt == 2:
                     self.logger.warning(
-                        f"Failed to rename file with id <{file_id}> from <{old_name}> to <{new_name}> after 3 attempts: {error}\n"
+                        f"Failed to rename file with id <{file_id}> from <{old_name}> "
+                        f"to <{new_name}> after 3 attempts: {error}\n"
                     )
                 else:
                     self.logger.debug(
-                        f"Attempt {attempt + 1} to rename file with id <{file_id}>from <{old_name}> to <{new_name}> failed: {error}\n"
+                        f"Attempt {attempt + 1} to rename file with id <{file_id}> "
+                        f"from <{old_name}> to <{new_name}> failed: {error}\n"
                     )

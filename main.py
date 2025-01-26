@@ -1,14 +1,13 @@
+import asyncio
 import logging
-
 from sys import stdout
 from time import time
-from mongo import MongoClient
+
 from gdrive import GoogleDriveClient
 from gsheet import GoogleSheetClient
+from mongo import MongoClient
 from process_data import interpret_backtests
-
 from settings import get_settings
-import asyncio
 
 
 async def main() -> None:
@@ -38,8 +37,6 @@ async def main() -> None:
     )
 
     start_time = time()
-    # This function is based off the fact that structure is constructed with an 'id' based off of the Google Drive id
-    # If the backtest drive is ever moved off of Google Drive into a physical filesystem or elsewhere, I recommend to change get_recursive_structure so that the id stored is the complete path of the file
     all_backtests, all_dpts, all_classnames = await interpret_backtests(
         logger, structure, sheet_client, gdrive_client
     )

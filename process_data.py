@@ -1,8 +1,9 @@
-from gdrive import GoogleDriveClient
+import asyncio
 import re
 from datetime import date
 from logging import Logger
-import asyncio
+
+from gdrive import GoogleDriveClient
 from gsheet import GoogleSheetClient
 
 examtype_mapping = {
@@ -68,7 +69,9 @@ async def process_test(
         + dptname
         + ")(-| )?"
         + classnum
-        + r"( |_|-)?( |_|-)?( |_|-)?)?(M1?|E[1-9]|Q|Q[1-9][0-9]?) ?(F|S|U|S[U])([0-9]{2})(.*?)(\.pdf)?$"
+        + r"( |_|-)?( |_|-)?( |_|-)?)?"
+        + r"(M1?|E[1-9]|Q|Q[1-9][0-9]?) ?"
+        + r"(F|S|U|S[U])([0-9]{2})(.*?)(\.pdf)?$"
     )
 
     match = re.match(class_start, name, re.IGNORECASE)
@@ -109,7 +112,8 @@ async def process_test(
                 exam["tests"].append(examsemester)
                 inserted = True
                 logger.info(
-                    f"Appended {examsemester} to existing exam type {examtype} for {full_classname}"
+                    f"Appended {examsemester} to existing exam type {examtype} "
+                    f"for {full_classname}"
                 )
                 break
         if not inserted:
@@ -120,7 +124,8 @@ async def process_test(
                 }
             )
             logger.info(
-                f"Added new exam type {examtype} with {examsemester} for {full_classname}"
+                f"Added new exam type {examtype} with {examsemester} "
+                f"for {full_classname}"
             )
     else:
         results[full_classname] = [
@@ -130,12 +135,14 @@ async def process_test(
             }
         ]
         logger.info(
-            f"Created new entry for {full_classname} with exam type {examtype} and {examsemester}"
+            f"Created new entry for {full_classname} with exam type "
+            f"{examtype} and {examsemester}"
         )
 
     all_classnames[full_classname][2] += 1
     logger.info(
-        f"Incremented test count for {full_classname} to {all_classnames[full_classname][2]}"
+        f"Incremented test count for {full_classname} to "
+        f"{all_classnames[full_classname][2]}"
     )
 
 
@@ -182,10 +189,12 @@ async def process_course(
         return
     elif match.group(2) != dptname:
         errors.append(
-            f"Department name does not match: {dptname} and {match.groups(2)} in {classname}"
+            f"Department name does not match: {dptname} "
+            f"and {match.groups(2)} in {classname}"
         )
         logger.warning(
-            f"Department name does not match: {dptname} and {match.groups(2)} in {classname}"
+            f"Department name does not match: {dptname} "
+            f"and {match.groups(2)} in {classname}"
         )
 
     classnum = match.group(3)
@@ -205,10 +214,12 @@ async def process_course(
         dptname2, classnum2, _ = all_classnames[full_classname]
         if dptname2 != dptname:
             crosslisted_output.append(
-                f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} and {dptname}-{classnum}"
+                f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
+                f"and {dptname}-{classnum}"
             )
             logger.info(
-                f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} and {dptname}-{classnum}"
+                f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
+                f"and {dptname}-{classnum}"
             )
 
     tasks = []
@@ -262,7 +273,7 @@ async def process_department(
     :param gdrive_client: GoogleDriveClient object to interact with Google Drive.
     """
 
-    # Filter out files in the root directory which are do not represent current departments
+    # Filter out files in the root directory which do not represent current departments
     logger.info(f"Processing department: {structure[did]['name']}")
     if structure[did]["children"] is not None and len(structure[did]["name"]) <= 6:
         match = find_department.search(structure[did]["name"])
@@ -311,7 +322,8 @@ async def interpret_backtests(
     gdrive_client: GoogleDriveClient,
 ) -> tuple[dict, set[str], dict]:
     """
-    Take in the structure of the Google Drive and interpret the backtests to be used for mongoDB and Google Sheets.
+    Take in the structure of the Google Drive and interpret the
+    backtests to be used for mongoDB and Google Sheets.
 
     :param logger: Logger object to log information.
     :param structure: Structure of the Google Drive.

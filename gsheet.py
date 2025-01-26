@@ -1,12 +1,12 @@
-from gspread import auth
-from gspread.exceptions import WorksheetNotFound, APIError
-from gspread.worksheet import Worksheet
-from google.oauth2 import service_account
-
-from os import path
-from logging import Logger
 import asyncio
 import re
+from logging import Logger
+from os import path
+
+from google.oauth2 import service_account
+from gspread import auth
+from gspread.exceptions import APIError, WorksheetNotFound
+from gspread.worksheet import Worksheet
 
 scopes = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -209,9 +209,11 @@ class GoogleSheetClient:
             try:
                 await self.update_count(key, tab, values[2], classes_not_found)
             except APIError as e:
-                # Hit rate limit delay for 60 seconds in attempt to stay below rate limits
+                # Hit rate limit delay for 60 seconds in attempt to
+                # stay below rate limits
                 self.logger.info(
-                    f"API Error: {e}\nWaiting 60 seconds to way for the rate limit to reset"
+                    f"API Error: {e}\nWaiting 60 seconds to way for the "
+                    "rate limit to reset"
                 )
                 await asyncio.sleep(60)
                 await self.update_count(key, tab, values[2], classes_not_found)
