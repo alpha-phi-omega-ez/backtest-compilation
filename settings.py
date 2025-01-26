@@ -1,0 +1,13 @@
+from dotenv import load_dotenv
+from os import getenv
+
+
+def get_settings() -> dict:
+    load_dotenv()
+    return {
+        "FOLDER_ID": getenv("FOLDER_ID"),
+        "DELEGATE_EMAIL": getenv("DELEGATE_EMAIL"),
+        "SHEET_URL": getenv("SHEET_URL"),
+        "MONGO_URI": getenv("MONGO_URI", "mongodb://localhost:27017"),
+        "LOG_LEVEL": getenv("LOG_LEVEL", "INFO"),
+    }
