@@ -24,8 +24,6 @@ async def main() -> None:
     logger = logging.getLogger(__name__)
 
     gdrive_client = GoogleDriveClient(settings, logger)
-    mongo_client = MongoClient(settings, logger)
-    sheet_client = GoogleSheetClient(settings, logger)
 
     start_time = time()
     structure = await gdrive_client.get_recursive_structure(
@@ -36,6 +34,8 @@ async def main() -> None:
         f"Time taken to get recursive structure: {end_time - start_time} seconds"
     )
 
+    sheet_client = GoogleSheetClient(settings, logger)
+
     start_time = time()
     all_backtests, all_dpts, all_classnames = await interpret_backtests(
         logger, structure, sheet_client, gdrive_client
@@ -43,10 +43,12 @@ async def main() -> None:
     end_time = time()
     logger.info(f"Time taken to interpret backtests: {end_time - start_time} seconds")
 
+    mongo_client = MongoClient(settings, logger)
     start_time = time()
     await mongo_client.add_to_mongo(all_backtests, all_dpts, all_classnames)
     end_time = time()
     logger.info(f"Time taken to add to mongo: {end_time - start_time} seconds")
+    await mongo_client.close()
 
     start_time = time()
     await sheet_client.update_counts(all_classnames)
@@ -57,8 +59,6 @@ async def main() -> None:
 
     total_end = time()
     logger.info(f"Total time taken: {total_end - total_start} seconds")
-
-    mongo_client.close()
 
 
 if __name__ == "__main__":
