@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from logging import Logger
 from os import path
@@ -55,6 +56,69 @@ class GoogleSheetClient:
             # If the tab doesn't exist, create it
             self.logger.debug(f"Creating tab {tab_name}")
             return self.sheet.add_worksheet(title=tab_name, rows=rows, cols=cols)
+
+    async def check_error_cache(
+        self,
+        errors: list[str],
+        invalid_filenames: list[str],
+        crosslisted_output: list[str],
+    ) -> bool:
+        """
+        Check if the errors are the same as the ones in the Google Sheet.
+
+        :param errors: List of errors to check.
+        :param invalid_filenames: List of invalid filenames to check.
+        :param crosslisted_output: List of crosslisted classes to check.
+        :return: True if the errors are the same, False otherwise.
+        """
+
+        if not path.exists(path.join(path.dirname(__file__), "sheet_errors.json")):
+            await self.update_error_cache(errors, invalid_filenames, crosslisted_output)
+            return False
+
+        with open(path.join(path.dirname(__file__), "sheet_errors.json"), "r") as f:
+            cache = json.load(f)
+
+        check = (
+            (cache["errors"] == errors)
+            and (cache["invalid_filenames"] == invalid_filenames)
+            and (cache["crosslisted_output"] == crosslisted_output)
+        )
+
+        if not check:
+            self.logger.info("Errors are outdated. Updating errors.")
+            await self.update_error_cache(errors, invalid_filenames, crosslisted_output)
+        else:
+            self.logger.info("Errors match the cache.")
+
+        return check
+
+    async def update_error_cache(
+        self,
+        errors: list[str],
+        invalid_filenames: list[str],
+        crosslisted_output: list[str],
+    ) -> None:
+        """
+        Update the cache with the errors in the Google Sheet.
+
+        :param errors: List of errors to update.
+        :param invalid_filenames: List of invalid filenames to update.
+        :param crosslisted_output: List of crosslisted classes to update.
+        """
+
+        data = {
+            "errors": errors,
+            "invalid_filenames": invalid_filenames,
+            "crosslisted_output": crosslisted_output,
+        }
+
+        self.logger.info("Updating cache file with new structure.")
+        with open(path.join(path.dirname(__file__), "sheet_errors.json"), "w") as f:
+            json.dump(data, f)
+            self.logger.debug(f"Cache file updated with {data}")
+
+        self.logger.info("Cache file updated successfully.")
 
     async def write_errors(
         self,
@@ -121,10 +185,11 @@ class GoogleSheetClient:
         :param crosslisted_output: List of crosslisted classes to write.
         """
 
+        if await self.check_error_cache(errors, invalid_filenames, crosslisted_output):
+            self.logger.info("Errors are the same as the ones in the Google Sheet.")
+            return
+
         tab = await self.get_or_create_tab("Errors in Drive")
-
-        # check if errors have changed
-
         tab.clear()
         tab.format(
             "A:A",
@@ -143,7 +208,44 @@ class GoogleSheetClient:
             crosslisted_output, "Crosslisted Classes", tab, index
         )
 
-        # save errors
+    async def check_class_cache(self, all_classnames: dict) -> bool:
+        """
+        Check if the class counts are the same as the ones in the Google Sheet.
+
+        :param all_classnames: Dictionary with the classes and their counts.
+        :return: True if the class counts are the same, False otherwise.
+        """
+
+        if not path.exists(path.join(path.dirname(__file__), "sheet_classes.json")):
+            await self.update_class_cache(all_classnames)
+            return False
+
+        with open(path.join(path.dirname(__file__), "sheet_classes.json"), "r") as f:
+            cache = json.load(f)
+
+        check = cache == all_classnames
+
+        if not check:
+            self.logger.info("Class counts are outdated. Updating class counts.")
+            await self.update_class_cache(all_classnames)
+        else:
+            self.logger.info("Class counts match the cache.")
+
+        return check
+
+    async def update_class_cache(self, all_classnames: dict) -> None:
+        """
+        Update the cache with the class counts in the Google Sheet.
+
+        :param all_classnames: Dictionary with the classes and their counts.
+        """
+
+        self.logger.info("Updating cache file with new class counts.")
+        with open(path.join(path.dirname(__file__), "sheet_classes.json"), "w") as f:
+            json.dump(all_classnames, f)
+            self.logger.debug(f"Cache file updated with {all_classnames}")
+
+        self.logger.info("Cache file updated successfully.")
 
     async def update_count(
         self, classname: str, tab: Worksheet, count: int, classes_not_found: list[str]
@@ -164,7 +266,7 @@ class GoogleSheetClient:
             )
             self.logger.debug(f"Count {count} updated for {classname}")
         else:
-            self.logger.error(f"Class {classname} not found in tab")
+            self.logger.info(f"Class {classname} not found in tab")
             classes_not_found.append(classname)
 
     async def update_counts(self, all_classnames: dict) -> None:
@@ -174,9 +276,13 @@ class GoogleSheetClient:
         :param all_classnames: Dictionary with the classes and their counts.
         """
 
-        tab = await self.get_or_create_tab("Physical Copies of Backtests")
+        if await self.check_class_cache(all_classnames):
+            self.logger.info(
+                "Class counts are the same as the ones in the Google Sheet."
+            )
+            return
 
-        # find the classes that have changed
+        tab = await self.get_or_create_tab("Physical Copies of Backtests")
 
         col_values = tab.col_values(6)
         self.logger.debug(f"Column values: {col_values}")
@@ -220,10 +326,6 @@ class GoogleSheetClient:
 
         self.logger.debug(f"Counts updated for {len(all_classnames)} classes")
 
-        # save classes that are up to date
-
-        # check if classes not found errors have changed
-
         tab = await self.get_or_create_tab("Classes Not Found")
         tab.clear()
         tab.format(
@@ -234,5 +336,3 @@ class GoogleSheetClient:
             },
         )
         await self.write_errors(classes_not_found, "Classes Not Found", tab)
-
-        # save classes not found errors
