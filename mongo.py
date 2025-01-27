@@ -84,7 +84,7 @@ class MongoClient:
             {"name": classname}
         )
         if not current_course:
-            self.logger.error(f"Course {classname} not found in database")
+            self.logger.info(f"Course {classname} not found in database")
             raise ValueError(f"Course {classname} not found in database")
 
         current_tests = await self.backtest_collection.find_one(

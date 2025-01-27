@@ -60,7 +60,7 @@ async def process_test(
 
     if children is not None:
         errors.append(f"Folder in {dptname}-{classnum}: {name}")
-        logger.error(f"Folder found instead of file in {dptname}-{classnum}: {name}")
+        logger.info(f"Folder found instead of file in {dptname}-{classnum}: {name}")
         return
 
     class_start = (
@@ -77,7 +77,7 @@ async def process_test(
     match = re.match(class_start, name, re.IGNORECASE)
     if match is None:
         invalid_filenames.append(f"Invalid filename in {dptname}-{classnum}: {name}")
-        logger.error(f"Invalid filename in {dptname}-{classnum}: {name}")
+        logger.info(f"Invalid filename in {dptname}-{classnum}: {name}")
         return
 
     exam_num = match.group(7)
@@ -91,7 +91,7 @@ async def process_test(
     year = match.group(9)
     if int(year) > current_year and dptname.upper() != "BEAR":
         invalid_filenames.append(f"Invalid year in {dptname}-{classnum}: {name}")
-        logger.error(f"Invalid year in {dptname}-{classnum}: {name}")
+        logger.info(f"Invalid year in {dptname}-{classnum}: {name}")
         return
 
     correct_filename = f"{dptname}-{classnum} {exam_num}{semester}{year}.pdf"
@@ -111,7 +111,7 @@ async def process_test(
             if exam["type"] == examtype:
                 exam["tests"].append(examsemester)
                 inserted = True
-                logger.info(
+                logger.debug(
                     f"Appended {examsemester} to existing exam type {examtype} "
                     f"for {full_classname}"
                 )
@@ -123,7 +123,7 @@ async def process_test(
                     "tests": [examsemester],
                 }
             )
-            logger.info(
+            logger.debug(
                 f"Added new exam type {examtype} with {examsemester} "
                 f"for {full_classname}"
             )
@@ -134,13 +134,13 @@ async def process_test(
                 "tests": [examsemester],
             }
         ]
-        logger.info(
+        logger.debug(
             f"Created new entry for {full_classname} with exam type "
             f"{examtype} and {examsemester}"
         )
 
     all_classnames[full_classname][2] += 1
-    logger.info(
+    logger.debug(
         f"Incremented test count for {full_classname} to "
         f"{all_classnames[full_classname][2]}"
     )
@@ -179,13 +179,13 @@ async def process_course(
 
     if files is None:
         errors.append(f"File in {dptname} folder is not a CLASS: {classname}")
-        logger.error(f"File in {dptname} folder is not a CLASS: {classname}")
+        logger.info(f"File in {dptname} folder is not a CLASS: {classname}")
         return
 
     match = find_classname.search(classname)
     if match is None:
         errors.append(f"Invalid CLASS in {dptname}: {classname}")
-        logger.error(f"Invalid CLASS in {dptname}: {classname}")
+        logger.info(f"Invalid CLASS in {dptname}: {classname}")
         return
     elif match.group(2) != dptname:
         errors.append(
@@ -200,16 +200,15 @@ async def process_course(
     classnum = match.group(3)
     if (dptname, classnum) not in all_classnums:
         all_classnums.add((dptname, classnum))
-        logger.info(f"Added class number {classnum} for department {dptname}")
+        logger.debug(f"Added class number {classnum} for department {dptname}")
     else:
         errors.append(f"Duplicate CLASS in {dptname}: {classnum}")
-        logger.error(f"Duplicate CLASS in {dptname}: {classnum}")
+        logger.info(f"Duplicate CLASS in {dptname}: {classnum}")
     classname = match.group(4)
 
     full_classname = dptname + "-" + classnum + " " + classname
     if full_classname not in all_classnames:
         all_classnames[full_classname] = [dptname, classnum, 0]
-        logger.info(f"Added new class {full_classname}")
     else:
         dptname2, classnum2, _ = all_classnames[full_classname]
         if dptname2 != dptname:
@@ -280,12 +279,12 @@ async def process_department(
         # Expects some text before four capital letters
         if match is None:
             errors.append(f"Invalid DEPARTMENT: {structure[did]['name']}")
-            logger.error(f"Invalid DEPARTMENT: {structure[did]['name']}")
+            logger.info(f"Invalid DEPARTMENT: {structure[did]['name']}")
             return
         dptname = match.group(2)
         if dptname in all_dpts:
             errors.append(f"Duplicate DEPARTMENT: {dptname}")
-            logger.error(f"Duplicate DEPARTMENT: {dptname}")
+            logger.info(f"Duplicate DEPARTMENT: {dptname}")
         else:
             all_dpts.add(dptname)
             logger.info(f"Added department: {dptname}")
