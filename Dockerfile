@@ -4,7 +4,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine
 # Set the working directory
 WORKDIR /app
 
-COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py grdrive.py /app/
+COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py /app/
 
 RUN uv sync --frozen --no-cache
 
