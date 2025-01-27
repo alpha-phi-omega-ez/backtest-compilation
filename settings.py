@@ -11,4 +11,6 @@ def get_settings() -> dict:
         "SHEET_URL": getenv("SHEET_URL"),
         "MONGO_URI": getenv("MONGO_URI", "mongodb://localhost:27017"),
         "LOG_LEVEL": getenv("LOG_LEVEL", "INFO"),
+        "SENTRY_DSN": getenv("SENTRY_DSN", ""),
+        "SENTRY_TRACE_RATE": getenv("SENTRY_TRACE_RATE", 1.0),
     }
