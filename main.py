@@ -3,6 +3,8 @@ import logging
 from sys import stdout
 from time import time
 
+import sentry_sdk
+
 from gdrive import GoogleDriveClient
 from gsheet import GoogleSheetClient
 from mongo import MongoClient
@@ -11,54 +13,78 @@ from settings import get_settings
 
 
 async def main() -> None:
-    total_start = time()
-    settings = get_settings()
-    # Setup logger
-    logging.basicConfig(
-        level=settings["LOG_LEVEL"],
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.StreamHandler(stdout),
-        ],
-    )
-    logger = logging.getLogger(__name__)
+    try:
+        total_start = time()
+        settings = get_settings()
 
-    gdrive_client = GoogleDriveClient(settings, logger)
+        sentry_sdk.init(
+            dsn=settings["SENTRY_DSN"],
+            traces_sample_rate=settings["SENTRY_TRACE_RATE"],
+        )
 
-    start_time = time()
-    structure = await gdrive_client.get_recursive_structure(
-        settings["FOLDER_ID"], settings["FOLDER_ID"]
-    )
-    end_time = time()
-    logger.info(
-        f"Time taken to get recursive structure: {end_time - start_time} seconds"
-    )
+        # Setup logger
+        logging.basicConfig(
+            level=settings["LOG_LEVEL"],
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.StreamHandler(stdout),
+            ],
+        )
+        logger = logging.getLogger(__name__)
 
-    sheet_client = GoogleSheetClient(settings, logger)
+        gdrive_client = GoogleDriveClient(settings, logger)
 
-    start_time = time()
-    all_backtests, all_dpts, all_classnames = await interpret_backtests(
-        logger, structure, sheet_client, gdrive_client
-    )
-    end_time = time()
-    logger.info(f"Time taken to interpret backtests: {end_time - start_time} seconds")
+        structure_start_time = time()
+        structure = await gdrive_client.get_structure(
+            settings["FOLDER_ID"], settings["FOLDER_ID"]
+        )
+        structure_end_time = time()
 
-    mongo_client = MongoClient(settings, logger)
-    start_time = time()
-    await mongo_client.add_to_mongo(all_backtests, all_dpts, all_classnames)
-    end_time = time()
-    logger.info(f"Time taken to add to mongo: {end_time - start_time} seconds")
-    await mongo_client.close()
+        sheet_client = GoogleSheetClient(settings, logger)
 
-    start_time = time()
-    await sheet_client.update_counts(all_classnames)
-    end_time = time()
-    logger.info(
-        f"Time taken to update counts on Google Sheet: {end_time - start_time} seconds"
-    )
+        processing_start_time = time()
+        all_backtests, all_dpts, all_classnames = await interpret_backtests(
+            logger, structure, sheet_client, gdrive_client
+        )
+        processing_end_time = time()
 
-    total_end = time()
-    logger.info(f"Total time taken: {total_end - total_start} seconds")
+        mongo_client = MongoClient(settings, logger)
+        mongo_start_time = time()
+        await mongo_client.add_to_mongo(all_backtests, all_dpts, all_classnames)
+        mongo_end_time = time()
+        await mongo_client.close()
+
+        sheets_start_time = time()
+        await sheet_client.update_counts(all_classnames)
+        sheets_end_time = time()
+
+    except (KeyboardInterrupt, SystemExit) as _:
+        logger.info("Signal recieved ending program")
+        if mongo_client:
+            await mongo_client.close()
+    finally:
+        total_end = time()
+        if structure_start_time and structure_end_time:
+            logger.info(
+                f"Time taken to get recursive structure: "
+                f"{structure_end_time - structure_start_time} seconds"
+            )
+        if processing_start_time and processing_end_time:
+            logger.info(
+                f"Time taken to process backtests: "
+                f"{processing_end_time - processing_start_time} seconds"
+            )
+        if mongo_start_time and mongo_end_time:
+            logger.info(
+                f"Time taken to add to MongoDB: "
+                f"{mongo_end_time - mongo_start_time} seconds"
+            )
+        if sheets_start_time and sheets_end_time:
+            logger.info(
+                f"Time taken to update Google Sheets: "
+                f"{sheets_end_time - sheets_start_time} seconds"
+            )
+        logger.info(f"Total time taken: {total_end - total_start} seconds")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ dependencies = [
     "gspread>=6.1.4",
     "motor>=3.6.1",
     "python-dotenv>=1.0.1",
+    "sentry-sdk>=2.20.0",
 ]
 
 [tool.ruff.lint]
