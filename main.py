@@ -13,6 +13,11 @@ from settings import get_settings
 
 
 async def main() -> None:
+    mongo_client = None
+    structure_start_time, structure_end_time = None, None
+    processing_start_time, processing_end_time = None, None
+    mongo_start_time, mongo_end_time = None, None
+    sheets_start_time, sheets_end_time = None, None
     try:
         total_start = time()
         settings = get_settings()
@@ -58,28 +63,32 @@ async def main() -> None:
         await sheet_client.update_counts(all_classnames)
         sheets_end_time = time()
 
-        logger.info(
-            f"Time taken to get recursive structure: "
-            f"{structure_end_time - structure_start_time} seconds"
-        )
-        logger.info(
-            f"Time taken to process backtests: "
-            f"{processing_end_time - processing_start_time} seconds"
-        )
-        logger.info(
-            f"Time taken to add to MongoDB: {mongo_end_time - mongo_start_time} seconds"
-        )
-        logger.info(
-            f"Time taken to update Google Sheets: "
-            f"{sheets_end_time - sheets_start_time} seconds"
-        )
-
     except (KeyboardInterrupt, SystemExit) as _:
         logger.info("Signal recieved ending program")
+    finally:
         if mongo_client:
             await mongo_client.close()
-    finally:
         total_end = time()
+        if structure_start_time and structure_end_time:
+            logger.info(
+                f"Time taken to get recursive structure: "
+                f"{structure_end_time - structure_start_time} seconds"
+            )
+        if processing_start_time and processing_end_time:
+            logger.info(
+                f"Time taken to process backtests: "
+                f"{processing_end_time - processing_start_time} seconds"
+            )
+        if mongo_start_time and mongo_end_time:
+            logger.info(
+                f"Time taken to add to MongoDB: "
+                f"{mongo_end_time - mongo_start_time} seconds"
+            )
+        if sheets_start_time and sheets_end_time:
+            logger.info(
+                f"Time taken to update Google Sheets: "
+                f"{sheets_end_time - sheets_start_time} seconds"
+            )
         logger.info(f"Total time taken: {total_end - total_start} seconds")
 
 
