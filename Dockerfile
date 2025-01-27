@@ -9,7 +9,7 @@ COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py
 RUN uv sync --frozen --no-cache
 
 # Install cron
-RUN apt-get -y install cron
+RUN apt-get update && apt-get install -y cron && apt-get clean
 
 # Add crontab file in the cron directory
 COPY crontab /etc/cron.d/backtest-cron
