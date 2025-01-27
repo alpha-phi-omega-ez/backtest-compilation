@@ -8,5 +8,12 @@ dependencies = [
     "google-api-python-client>=2.159.0",
     "google-auth-httplib2>=0.2.0",
     "google-auth-oauthlib>=1.2.1",
-    "pymongo>=4.10.1",
+    "gspread>=6.1.4",
+    "motor>=3.6.1",
+    "python-dotenv>=1.0.1",
+    "sentry-sdk>=2.20.0",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+fixable = ["I"]

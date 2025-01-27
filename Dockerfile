@@ -4,11 +4,9 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine
 # Set the working directory
 WORKDIR /app
 
-COPY uv.lock, .python-version, pyproject.toml ./
+COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py /app/
 
 RUN uv sync --frozen --no-cache
-
-COPY main.py .
 
 # Install cron
 RUN apk add --no-cache cronie
