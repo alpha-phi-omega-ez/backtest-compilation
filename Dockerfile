@@ -18,4 +18,4 @@ COPY crontab /etc/crontabs/root
 RUN chmod 0644 /etc/crontabs/root
 
 # Run the command on container startup
-CMD ["crond", "-f", "-l", "2"]
+CMD ["crond", "-f"]
