@@ -1,6 +1,5 @@
 import asyncio
 import json
-import sys
 from logging import Logger
 from os import path
 
@@ -40,16 +39,21 @@ class GoogleDriveClient:
         """
 
         if not path.exists(path.join(path.dirname(__file__), "structure.json")):
+            self.logger.info("Cache file does not exist. Updating cache.")
             await self.update_cache(structure)
             return False
 
+        self.logger.info("Cache file exists. Checking if it is up to date.")
         with open(path.join(path.dirname(__file__), "structure.json"), "r") as f:
             cache = json.load(f)
 
         check = cache == structure
 
         if not check:
+            self.logger.info("Cache is outdated. Updating cache.")
             await self.update_cache(structure)
+        else:
+            self.logger.info("Cache is up to date.")
 
         return check
 
@@ -60,8 +64,12 @@ class GoogleDriveClient:
         :param structure: Structure of the backtest drive.
         """
 
+        self.logger.info("Updating cache file with new structure.")
         with open(path.join(path.dirname(__file__), "structure.json"), "w") as f:
             json.dump(structure, f)
+            self.logger.debug(f"Cache file updated with {structure}")
+
+        self.logger.info("Cache file updated successfully.")
 
     async def get_structure(self, fileid: str, sharedDrive: str) -> dict:
         """
@@ -71,11 +79,19 @@ class GoogleDriveClient:
         :param sharedDrive: ID of the shared drive.
         """
 
+        self.logger.info("Getting structure of the backtest drive.")
         structure = await self.get_recursive_structure(fileid, sharedDrive)
+        self.logger.info("Comleted getting structure of the backtest drive.")
 
-        if self.cache_check(structure):
-            self.logger.info("Cache is the same as the current structure")
-            sys.exit(0)
+        self.logger.info("Checking if cache is up to date.")
+        if await self.cache_check(structure):
+            self.logger.info("Cache is the same as the current structure exiting")
+            raise SystemExit
+
+        self.logger.info(
+            "Cache is not up to date. Updating cache and continue "
+            "the rest of the process."
+        )
 
         return structure
 
