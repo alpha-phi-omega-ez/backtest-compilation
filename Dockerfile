@@ -9,10 +9,12 @@ COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py
 RUN uv sync --frozen --no-cache
 
 # Install cron
-RUN apk add --no-cache cronie
+RUN apk add --no-cache busybox-suid cron
 
 # Add crontab file in the cron directory
 COPY crontab /etc/crontabs/root
+
+RUN chmod +x /app/main.py
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/crontabs/root
