@@ -4,7 +4,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 # Set the working directory
 WORKDIR /app
 
-COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py run.sh /app/
+COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py settings.py run.sh /app/
 
 RUN uv sync --frozen --no-cache
 
