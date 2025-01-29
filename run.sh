@@ -1,13 +1,14 @@
 #!/bin/bash
 
 while true; do
-    uv run main.py
     current_hour=$(date +%H)
-    if [ $current_hour -ge 22 ] || [ $current_hour -lt 6 ]; then
-        echo "Sleeping for 8 hours"
-        sleep 28800
+    if [ $current_hour -ge 18 ] || [ $current_hour -lt 10 ]; then
+        echo "Sleeping for 1 hour"
+        sleep 3600
     else
-        echo "Sleeping for 2.5 hours"
-        sleep 9000
+        echo "Running main.py"
+        uv run main.py
+        echo "Sleeping for 2 hours"
+        sleep 7200
     fi
 done
