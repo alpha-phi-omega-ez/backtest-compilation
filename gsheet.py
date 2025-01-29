@@ -269,7 +269,9 @@ class GoogleSheetClient:
         """
 
         self.logger.debug(f"Updating count for {' '.join(classname.split(' ')[1:])}")
-        find_course = re.compile(rf".*{' '.join(classname.split(' ')[1:])}.*")
+        find_course = re.compile(
+            rf".*{' '.join(classname.split(' ')[1:])}.*", re.IGNORECASE
+        )
         cell = tab.find(find_course)
         if cell:
             tab.update_cell(cell.row, cell.col + 5, count)
