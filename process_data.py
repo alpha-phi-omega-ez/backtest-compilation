@@ -56,7 +56,7 @@ async def process_test(
     :param invalid_filenames: List of invalid filenames to write to Google Sheets.
     :param gdrive_client: GoogleDriveClient object to interact with Google Drive.
     """
-    logger.info(f"Processing file: {name} in {dptname}-{classnum}")
+    logger.debug(f"Processing file: {name} in {dptname}-{classnum}")
 
     if children is not None:
         errors.append(f"Folder in {dptname}-{classnum}: {name}")
@@ -175,7 +175,7 @@ async def process_course(
     :param gdrive_client: GoogleDriveClient object to interact with Google Drive.
     """
 
-    logger.info(f"Processing class: {classname} in department {dptname}")
+    logger.debug(f"Processing class: {classname} in department {dptname}")
 
     if files is None:
         errors.append(f"File in {dptname} folder is not a CLASS: {classname}")
@@ -240,7 +240,7 @@ async def process_course(
             )
         )
     await asyncio.gather(*tasks)
-    logger.info(f"Finished processing class: {classname} in department {dptname}")
+    logger.debug(f"Finished processing class: {classname} in department {dptname}")
 
 
 async def process_department(
