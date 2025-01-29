@@ -72,11 +72,15 @@ class GoogleSheetClient:
         :return: True if the errors are the same, False otherwise.
         """
 
-        if not path.exists(path.join(path.dirname(__file__), "sheet_errors.json")):
+        if not path.exists(
+            path.join(path.dirname(__file__), "cache", "sheet_errors.json")
+        ):
             await self.update_error_cache(errors, invalid_filenames, crosslisted_output)
             return False
 
-        with open(path.join(path.dirname(__file__), "sheet_errors.json"), "r") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "r"
+        ) as f:
             cache = json.load(f)
 
         check = (
@@ -114,7 +118,9 @@ class GoogleSheetClient:
         }
 
         self.logger.info("Updating cache file with new structure.")
-        with open(path.join(path.dirname(__file__), "sheet_errors.json"), "w") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "w"
+        ) as f:
             json.dump(data, f)
             self.logger.debug(f"Cache file updated with {data}")
 
@@ -216,11 +222,15 @@ class GoogleSheetClient:
         :return: True if the class counts are the same, False otherwise.
         """
 
-        if not path.exists(path.join(path.dirname(__file__), "sheet_classes.json")):
+        if not path.exists(
+            path.join(path.dirname(__file__), "cache", "sheet_classes.json")
+        ):
             await self.update_class_cache(all_classnames)
             return False
 
-        with open(path.join(path.dirname(__file__), "sheet_classes.json"), "r") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "r"
+        ) as f:
             cache = json.load(f)
 
         check = cache == all_classnames
@@ -241,7 +251,9 @@ class GoogleSheetClient:
         """
 
         self.logger.info("Updating cache file with new class counts.")
-        with open(path.join(path.dirname(__file__), "sheet_classes.json"), "w") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "w"
+        ) as f:
             json.dump(all_classnames, f)
             self.logger.debug(f"Cache file updated with {all_classnames}")
 

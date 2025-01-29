@@ -38,13 +38,17 @@ class GoogleDriveClient:
         :param structure: Structure of the backtest drive.
         """
 
-        if not path.exists(path.join(path.dirname(__file__), "structure.json")):
+        if not path.exists(
+            path.join(path.dirname(__file__), "cache", "structure.json")
+        ):
             self.logger.info("Cache file does not exist. Updating cache.")
             await self.update_cache(structure)
             return False
 
         self.logger.info("Cache file exists. Checking if it is up to date.")
-        with open(path.join(path.dirname(__file__), "structure.json"), "r") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "structure.json"), "r"
+        ) as f:
             cache = json.load(f)
 
         check = cache == structure
@@ -65,7 +69,9 @@ class GoogleDriveClient:
         """
 
         self.logger.info("Updating cache file with new structure.")
-        with open(path.join(path.dirname(__file__), "structure.json"), "w") as f:
+        with open(
+            path.join(path.dirname(__file__), "cache", "structure.json"), "w"
+        ) as f:
             json.dump(structure, f)
             self.logger.debug(f"Cache file updated with {structure}")
 
