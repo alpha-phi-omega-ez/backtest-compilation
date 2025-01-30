@@ -14,6 +14,11 @@ scopes = [
 ]
 
 
+async def async_items(d: dict):
+    for k, v in d.items():
+        yield k, v
+
+
 class GoogleSheetClient:
     def __init__(self, settings: dict, logger: Logger) -> None:
         """
@@ -144,35 +149,40 @@ class GoogleSheetClient:
 
         self.logger.debug(f"Errors: {errors}")
 
-        try:
-            tab.update_cell(1 + index, 1, type)
-            tab.format(
-                f"A{1 + index}",
-                {
-                    "textFormat": {"bold": True},
-                    "backgroundColor": {"red": 1, "green": 0, "blue": 0},
-                },
-            )
-        except APIError as e:
-            self.logger.info(
-                f"API Error: {e}\nWaiting 60 seconds to way for the rate limit to reset"
-            )
-            # Wait for 60 seconds to stay under rate limits
-            await asyncio.sleep(60)
-            tab.update_cell(1 + index, 1, type)
-            tab.format(
-                f"A{1 + index}",
-                {
-                    "textFormat": {"bold": True},
-                    "backgroundColor": {"red": 1, "green": 0, "blue": 0},
-                },
-            )
+        for _ in range(2):
+            try:
+                tab.update_cell(1 + index, 1, type)
+                tab.format(
+                    f"A{1 + index}",
+                    {
+                        "textFormat": {"bold": True},
+                        "backgroundColor": {"red": 1, "green": 0, "blue": 0},
+                    },
+                )
+                break
+            except APIError as e:
+                self.logger.info(
+                    f"API Error: {e}\nWaiting 60 seconds to way "
+                    "for the rate limit to reset"
+                )
+                # Wait for 60 seconds to stay under rate limits
+                await asyncio.sleep(60)
 
         self.logger.debug("Writing errors")
-        tab.update(
-            [[error] for error in errors],
-            f"A{2 + index}:A{len(errors) + 2 + index}",
-        )
+        for _ in range(2):
+            try:
+                tab.update(
+                    [[error] for error in errors],
+                    f"A{2 + index}:A{len(errors) + 2 + index}",
+                )
+                break
+            except APIError as e:
+                self.logger.info(
+                    f"API Error: {e}\nWaiting 60 seconds to way "
+                    "for the rate limit to reset"
+                )
+                # Wait for 60 seconds to stay under rate limits
+                await asyncio.sleep(60)
 
         self.logger.debug(f"Errors written ending at row {len(errors) + 2 + index}")
         return len(errors) + 2 + index
@@ -196,15 +206,23 @@ class GoogleSheetClient:
             return
 
         tab = await self.get_or_create_tab("Errors in Drive")
-        tab.clear()
-        tab.format(
-            "A:A",
-            {
-                "textFormat": {"bold": False},
-                "backgroundColor": {"red": 1, "green": 1, "blue": 1},
-            },
-        )
-        self.logger.debug("Tab cleared")
+        for _ in range(2):
+            try:
+                tab.clear()
+                tab.format(
+                    "A:A",
+                    {
+                        "textFormat": {"bold": False},
+                        "backgroundColor": {"red": 1, "green": 1, "blue": 1},
+                    },
+                )
+                break
+            except APIError as e:
+                self.logger.info(
+                    f"API Error: {e}\nWaiting 60 seconds to wait "
+                    "for the rate limit to reset"
+                )
+                await asyncio.sleep(60)
 
         index = await self.write_errors(errors, "Errors", tab)
         index = await self.write_errors(
@@ -259,26 +277,32 @@ class GoogleSheetClient:
 
         self.logger.info("Cache file updated successfully.")
 
-    async def update_count(
-        self, classname: str, tab: Worksheet, count: int, classes_not_found: list[str]
+    async def get_location(
+        self,
+        classname: str,
+        tab: Worksheet,
+        count: int,
+        classes_not_found: list[str],
+        items: list[tuple[int, int]],
     ) -> None:
         """
-        Update the count of a class in the Google Sheet.
+        Find the row of a class in the Google Sheet.
 
         :param classname: Name of the class to update.
+        :param tab: Worksheet object for the tab.
+        :param count: Count of the class to update.
+        :param classes_not_found: List of classes not found in the tab.
+        :param items: List of tuples with the row and count of the class.
         """
 
-        self.logger.debug(f"Updating count for {' '.join(classname.split(' ')[1:])}")
+        self.logger.debug(f"Finding class {' '.join(classname.split(' ')[1:])}")
         find_course = re.compile(
             rf".*{' '.join(classname.split(' ')[1:])}.*", re.IGNORECASE
         )
         cell = tab.find(find_course)
         if cell:
-            tab.update_cell(cell.row, cell.col + 5, count)
-            tab.format(
-                f"F{cell.row}", {"backgroundColor": {"red": 0, "green": 1, "blue": 0}}
-            )
-            self.logger.debug(f"Count {count} updated for {classname}")
+            self.logger.debug(f"Class {classname} found in tab")
+            items.append((cell.row, count))
         else:
             self.logger.info(f"Class {classname} not found in tab")
             classes_not_found.append(classname)
@@ -310,6 +334,7 @@ class GoogleSheetClient:
             if item and start is None:
                 start = i  # Mark the start of a non-empty block
             elif not item and start is not None:
+                self.logger.debug(f"Block from {start} to {i - 1}")
                 indices.append((start, i - 1))  # Mark the end of a non-empty block
                 start = None
 
@@ -318,35 +343,101 @@ class GoogleSheetClient:
             indices.append((start, len(col_values)))
 
         for index in indices:
-            tab.format(
-                f"F{index[0]}:F{index[1]}",
-                {"backgroundColor": {"red": 1, "green": 1, "blue": 0}},
-            )
+            for _ in range(2):
+                try:
+                    tab.format(
+                        f"F{index[0]}:F{index[1]}",
+                        {"backgroundColor": {"red": 1, "green": 1, "blue": 0}},
+                    )
+                    break
+                except APIError as e:
+                    self.logger.info(
+                        f"API Error: {e}\nWaiting 60 seconds to wait "
+                        "for the rate limit to reset"
+                    )
+                    await asyncio.sleep(60)
 
         classes_not_found = []
-        # Can't use asyncio.gather ecause of rate limits by google (300 per minute)
-        for key, values in all_classnames.items():
-            try:
-                await self.update_count(key, tab, values[2], classes_not_found)
-            except APIError as e:
-                # Hit rate limit delay for 60 seconds in attempt to
-                # stay below rate limits
-                self.logger.info(
-                    f"API Error: {e}\nWaiting 60 seconds to way for the "
-                    "rate limit to reset"
-                )
-                await asyncio.sleep(60)
-                await self.update_count(key, tab, values[2], classes_not_found)
+        counts = []
+        # Can't use asyncio.gather because of rate limits by google (300 per minute)
+        async for key, values in async_items(all_classnames):
+            for _ in range(2):
+                try:
+                    await self.get_location(
+                        key, tab, values[2], classes_not_found, counts
+                    )
+                    break
+                except APIError as e:
+                    # Hit rate limit delay for 60 seconds in attempt to
+                    # stay below rate limits
+                    self.logger.info(
+                        f"API Error: {e}\nWaiting 60 seconds to way for the "
+                        "rate limit to reset"
+                    )
+                    await asyncio.sleep(60)
+
+        counts.sort(key=lambda x: x[0])
+
+        # Batch update the counts in the tab
+        batch_data = []
+        current_batch = []
+        current_row = None
+
+        for row, value in counts:
+            if current_row is None or row == current_row + 1:
+                current_batch.append(value)
+            else:
+                if current_batch:
+                    self.logger.info(
+                        "Adding batch data for range "
+                        f"{current_row - len(current_batch) + 1}, {current_row}"
+                    )
+                    batch_data.append(
+                        (current_row - len(current_batch) + 1, current_batch)
+                    )
+                current_batch = [value]
+            current_row = row
+
+        if current_batch and current_row:
+            batch_data.append((current_row - len(current_batch) + 1, current_batch))
+
+        for start_row, values in batch_data:
+            cell_range = f"F{start_row}:F{start_row + len(values) - 1}"
+            for _ in range(2):
+                try:
+                    self.logger.debug(f"Updating counts for {values}")
+                    tab.update([[value] for value in values], cell_range)
+                    tab.format(
+                        cell_range,
+                        {"backgroundColor": {"red": 0, "green": 1, "blue": 0}},
+                    )
+                    break
+                except APIError as e:
+                    self.logger.info(
+                        f"API Error: {e}\nWaiting 60 seconds to wait "
+                        "for the rate limit to reset"
+                    )
+                    await asyncio.sleep(60)
 
         self.logger.debug(f"Counts updated for {len(all_classnames)} classes")
 
         tab = await self.get_or_create_tab("Classes Not Found")
-        tab.clear()
-        tab.format(
-            "A:A",
-            {
-                "textFormat": {"bold": False},
-                "backgroundColor": {"red": 1, "green": 1, "blue": 1},
-            },
-        )
+        for _ in range(2):
+            try:
+                tab.clear()
+                tab.format(
+                    "A:A",
+                    {
+                        "textFormat": {"bold": False},
+                        "backgroundColor": {"red": 1, "green": 1, "blue": 1},
+                    },
+                )
+                break
+            except APIError as e:
+                self.logger.info(
+                    f"API Error: {e}\nWaiting 60 seconds to wait "
+                    "for the rate limit to reset"
+                )
+                await asyncio.sleep(60)
+
         await self.write_errors(classes_not_found, "Classes Not Found", tab)
