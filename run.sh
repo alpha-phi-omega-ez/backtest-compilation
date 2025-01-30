@@ -2,7 +2,8 @@
 
 while true; do
     current_hour=$(date +%H)
-    if [ $current_hour -ge 18 ] || [ $current_hour -lt 10 ]; then
+    echo "Current hour: $current_hour"
+    if [ $current_hour -ge 23 ] || [ $current_hour -lt 15 ]; then
         echo "Sleeping for 1 hour"
         sleep 3600
     else
