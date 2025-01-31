@@ -120,7 +120,7 @@ class GoogleDriveClient:
                 results = (
                     self.service.files()
                     .list(
-                        q=f"'{fileid}' in parents",
+                        q=f"'{fileid}' in parents and trashed = false",
                         corpora="drive",
                         driveId=sharedDrive,
                         supportsAllDrives=True,
