@@ -60,7 +60,7 @@ async def process_test(
 
     if children is not None:
         errors.append(f"Folder in {dptname}-{classnum}: {name}")
-        logger.info(f"Folder found instead of file in {dptname}-{classnum}: {name}")
+        logger.warning(f"Folder found instead of file in {dptname}-{classnum}: {name}")
         return
 
     class_start = (
@@ -77,7 +77,7 @@ async def process_test(
     match = re.match(class_start, name, re.IGNORECASE)
     if match is None:
         invalid_filenames.append(f"Invalid filename in {dptname}-{classnum}: {name}")
-        logger.info(f"Invalid filename in {dptname}-{classnum}: {name}")
+        logger.warning(f"Invalid filename in {dptname}-{classnum}: {name}")
         return
 
     exam_num = match.group(7)
@@ -91,7 +91,7 @@ async def process_test(
     year = match.group(9)
     if int(year) > current_year and dptname.upper() != "BEAR":
         invalid_filenames.append(f"Invalid year in {dptname}-{classnum}: {name}")
-        logger.info(f"Invalid year in {dptname}-{classnum}: {name}")
+        logger.warning(f"Invalid year in {dptname}-{classnum}: {name}")
         return
 
     correct_filename = f"{dptname}-{classnum} {exam_num}{semester}{year}.pdf"
@@ -216,7 +216,7 @@ async def process_course(
                 f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
                 f"and {dptname}-{classnum}"
             )
-            logger.info(
+            logger.warning(
                 f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
                 f"and {dptname}-{classnum}"
             )
