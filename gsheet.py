@@ -35,7 +35,12 @@ class GoogleSheetClient:
         delegated_creds = credentials.with_subject(settings["DELEGATE_EMAIL"])
 
         self.gc = auth.authorize(delegated_creds)
-        self.sheet = self.gc.open_by_url(settings["SHEET_URL"])
+        try:
+            self.sheet = self.gc.open_by_url(settings["SHEET_URL"])
+        except APIError as e:
+            logger.error(f"API Error: {e}")
+            logger.error("Please check the Google Sheet URL and try again.")
+            exit(1)
 
         self.logger = logger
 
