@@ -1,4 +1,4 @@
-# Use the latest uv image with python 3.13 and alpine
+# Use the latest uv image with python 3.13 and debian
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 # Set the working directory
