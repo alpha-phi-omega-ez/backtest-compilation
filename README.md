@@ -2,17 +2,26 @@
 A Python script to compile backtests. The script reads the folder and file structure of the backtest drive in a Google Workspace. It reports updated counts and errors to a Google sheet to allow easy viewing of what needs to be done to reach parity between physical and digital copies of tests. It finds differences between the folders and files and existing backtests in the MongoDB collections holding backtest data. It updates the collections so that the website reflects the current backtest offerings.
 
 ## Set up
-To set up how to use this script, please look at installing Python:
-https://developers.google.com/drive/api/quickstart/python
-
 Install and setup [UV](https://docs.astral.sh/uv/getting-started/)
 - Install packages using uv
+
+```bash
+uv sync
+```
+
+### Google Cloud Integration
 
 Note that this requires a Google Cloud project with permissions, which is annoying to set up.  
 - Create a project at https://console.cloud.google.com
 - Enable the Google Drive API
 - Enable the Google Sheets API
 - Setup up a service account and save the credentials to config/service-credentials.json
+
+### MongoDB Integration
+
+This program depends on MongoDB to update collections and documents to match the files in a google drive. Details on the structure of the backtest data in the MongoDB collections can be found in the [backend repo](https://github.com/alpha-phi-omega-ez/backend/blob/main/server/models/backtest.py). There is a collection of course codes (CSCI, MATH, CHEM, etc.), backtest courses (Data Structures, Algorithms, Operating Systems, etc.), and backtests that contains the types of exams that are available for that class (Fall 2021, Spring 2024, Summer 2025, etc.)
+
+Here is an example of the [docker compose for MongoDB](https://github.com/alpha-phi-omega-ez/deployment/blob/main/main-website-docker-compose.yml#L3-L15) for use with this code and the production system for APOEZ.
 
 ## Usage
 For testing and one off operation do the setup above and ensure you have set the environment variables, this can be done through a .env file. Then run the application with `uv run python main.py`. A full run can take around 10 minutes due to slow API calls with google drive API and quoto limits on the google sheets API. Future runs store a cache that can cut times down significantly by removing the need to redo work on things like the google sheets API.
@@ -32,3 +41,23 @@ For both you need to put the service credentials json file in a file named `serv
 | `LOG_LEVEL` | `INFO` | Set the log level for the application, defaults to INFO |
 | `SENTRY_DSN` | None | Set the DSN for sentry use to track errors |
 | `SENTRY_TRACE_RATE` | `1.0` | Set the sentry trace rate | 
+
+## Running
+
+uv creates a virtual environment that stores all the packages. To run the application you can use uv or python linked in the virtual environment.
+
+To run the script one off you can call `main.py` directly
+
+```bash
+uv run main.py
+```
+
+### Production
+
+In production the code is run in a docker container which can be found in the [packages for this repo](https://github.com/alpha-phi-omega-ez/backtest-compilation/pkgs/container/backtest-compilation). The docker container runs with always-restart flag and uses a bash script to determine when to run. It isn't meant to run constantly instead at set intervals based on the time of day. It runs more often during work hours and less often during off hours. An example of how to run the backtest-compilation docker container can be found in the [docker compose used in production](https://github.com/alpha-phi-omega-ez/deployment/blob/main/main-website-docker-compose.yml#L68-L86). 
+
+To run this script you just need to call `run.sh`
+
+```bash
+./run.sh
+```
