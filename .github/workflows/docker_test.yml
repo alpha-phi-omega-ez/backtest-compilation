@@ -4,9 +4,10 @@ on:
   pull_request:
     paths:
       - "**.py"
-      - "requirements.txt"
       - "Dockerfile"
-      - "crontab"
+      - "uv.lock"
+      - ".python-version"
+      - "pyproject.toml"
 
 jobs:
   build:
