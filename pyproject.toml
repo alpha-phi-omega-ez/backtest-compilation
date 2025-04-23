@@ -3,7 +3,7 @@ name = "backtest-compilation"
 version = "1.0.0"
 description = "Compile backtest data from google drive and update mongodb collections to reflect the new data"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = "~=3.13"
 dependencies = [
     "google-api-python-client>=2.159.0",
     "google-auth-httplib2>=0.2.0",
