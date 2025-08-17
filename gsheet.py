@@ -1,6 +1,7 @@
 import asyncio
 import json
 import re
+from datetime import datetime
 from logging import Logger
 from os import path
 
@@ -446,3 +447,19 @@ class GoogleSheetClient:
                 await asyncio.sleep(60)
 
         await self.write_errors(classes_not_found, "Classes Not Found", tab)
+
+        tab = await self.get_or_create_tab("Physical Copies of Backtests")
+        for _ in range(2):
+            try:
+                tab.update_cell(
+                    27, 13, datetime.now().strftime("%-m/%-d/%y %I:%M:%S %p")
+                )
+                break
+            except APIError as e:
+                self.logger.info(
+                    f"API Error: {e}\nWaiting 60 seconds to way "
+                    "for the rate limit to reset"
+                )
+                # Wait for 60 seconds to stay under rate limits
+                await asyncio.sleep(60)
+        self.logger.debug("Updated runtime on gsheet")

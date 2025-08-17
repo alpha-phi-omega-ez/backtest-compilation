@@ -72,24 +72,24 @@ async def main() -> None:
         if structure_start_time and structure_end_time:
             logger.info(
                 f"Time taken to get recursive structure: "
-                f"{structure_end_time - structure_start_time} seconds"
+                f"{structure_end_time - structure_start_time:.2f} seconds"
             )
         if processing_start_time and processing_end_time:
             logger.info(
                 f"Time taken to process backtests: "
-                f"{processing_end_time - processing_start_time} seconds"
+                f"{processing_end_time - processing_start_time:.2f} seconds"
             )
         if mongo_start_time and mongo_end_time:
             logger.info(
                 f"Time taken to add to MongoDB: "
-                f"{mongo_end_time - mongo_start_time} seconds"
+                f"{mongo_end_time - mongo_start_time:.2f} seconds"
             )
         if sheets_start_time and sheets_end_time:
             logger.info(
                 f"Time taken to update Google Sheets: "
-                f"{sheets_end_time - sheets_start_time} seconds"
+                f"{sheets_end_time - sheets_start_time:.2f} seconds"
             )
-        logger.info(f"Total time taken: {total_end - total_start} seconds")
+        logger.info(f"Total time taken: {total_end - total_start:.2f} seconds")
 
 
 if __name__ == "__main__":
