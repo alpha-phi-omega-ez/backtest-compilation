@@ -1,7 +1,7 @@
 import asyncio
 from logging import Logger
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 
 type_order = {"Quiz": 1, "Exam": 2, "Midterm": 3}
 season_order = {"Spring": 1, "Summer": 2, "Fall": 3}
@@ -16,7 +16,7 @@ class MongoClient:
         :param logger: Logger object.
         """
 
-        self.client = AsyncIOMotorClient(settings["MONGO_URI"])
+        self.client = AsyncMongoClient(settings["MONGO_URI"])
         self.database = self.client.apo_main
         self.backtest_course_code_collection = self.database.get_collection(
             "backtest_course_code_collection"
@@ -32,7 +32,7 @@ class MongoClient:
         Close the MongoDB client.
         """
 
-        self.client.close()
+        await self.client.close()
 
     @staticmethod
     def sort_key(exam: dict) -> tuple[int, int | float]:
