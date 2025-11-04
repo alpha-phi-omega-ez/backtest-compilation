@@ -452,7 +452,7 @@ class GoogleSheetClient:
         for _ in range(2):
             try:
                 tab.update_cell(
-                    27, 13, datetime.now().strftime("%-m/%-d/%y %I:%M:%S %p")
+                    24, 16, datetime.now().strftime("%-m/%-d/%y %I:%M:%S %p")
                 )
                 break
             except APIError as e:
