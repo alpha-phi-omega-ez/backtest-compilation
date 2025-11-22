@@ -10,7 +10,7 @@ ENV UV_COMPILE_BYTECODE=1
 WORKDIR /app
 
 # Copy the required files
-COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py settings.py run.sh
+COPY uv.lock pyproject.toml process_data.py mongo.py main.py gsheet.py gdrive.py settings.py run.sh /app/
 
 # Install the required packages
 RUN uv sync --frozen --no-cache
