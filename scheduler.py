@@ -85,22 +85,12 @@ def calculate_sleep_seconds() -> int:
             )
         else:
             # Calculate next run time
-            if current_hour < next_hour:
-                # Next run is today
-                next_run = now.replace(
-                    hour=next_hour,
-                    minute=MINUTE_OFFSET,
-                    second=SECOND_OFFSET,
-                    microsecond=MICROSECOND_OFFSET,
-                )
-            else:
-                # Shouldn't happen, but handle edge case
-                next_run = (now + timedelta(days=1)).replace(
-                    hour=STARTING_HOUR,
-                    minute=MINUTE_OFFSET,
-                    second=SECOND_OFFSET,
-                    microsecond=MICROSECOND_OFFSET,
-                )
+            next_run = now.replace(
+                hour=next_hour,
+                minute=MINUTE_OFFSET,
+                second=SECOND_OFFSET,
+                microsecond=MICROSECOND_OFFSET,
+            )
 
         delay = (next_run - now).total_seconds()
         next_run_str = next_run.strftime("%Y-%m-%d %H:%M:%S %Z")
