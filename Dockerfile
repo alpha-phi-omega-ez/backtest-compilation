@@ -1,4 +1,4 @@
-# Use the 3.12 official docker hardened python dev image with debian trixie (v13)
+# Use the 3.14 official docker hardened python dev image with debian trixie (v13)
 FROM dhi.io/python:3.14-debian13-dev AS builder
 
 # Copy uv binary

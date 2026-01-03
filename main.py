@@ -14,7 +14,7 @@ from settings import get_settings
 
 def get_log_level(level_str: str) -> int:
     """Convert string log level to logging constant."""
-    level_str = level_str.upper().strip().strip('"').strip("'")
+    level_str = level_str.upper().strip()
     return getattr(logging, level_str, logging.INFO)
 
 
