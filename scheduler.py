@@ -25,6 +25,7 @@ STARTING_HOUR = 9
 # Offsets used to not run exactly on the hour
 MINUTE_OFFSET = 2
 SECOND_OFFSET = 7
+MICROSECOND_OFFSET = 12
 
 
 def should_run() -> bool:
@@ -56,7 +57,7 @@ def calculate_sleep_seconds() -> int:
                 hour=STARTING_HOUR,
                 minute=MINUTE_OFFSET,
                 second=SECOND_OFFSET,
-                microsecond=SECOND_OFFSET,
+                microsecond=MICROSECOND_OFFSET,
             )
         else:
             # After 7pm (hour > 19): wait until next morning start time
@@ -64,7 +65,7 @@ def calculate_sleep_seconds() -> int:
                 hour=STARTING_HOUR,
                 minute=MINUTE_OFFSET,
                 second=SECOND_OFFSET,
-                microsecond=SECOND_OFFSET,
+                microsecond=MICROSECOND_OFFSET,
             )
 
         delay = (next_run - now).total_seconds()
@@ -80,7 +81,7 @@ def calculate_sleep_seconds() -> int:
                 hour=STARTING_HOUR,
                 minute=MINUTE_OFFSET,
                 second=SECOND_OFFSET,
-                microsecond=SECOND_OFFSET,
+                microsecond=MICROSECOND_OFFSET,
             )
         else:
             # Calculate next run time
@@ -90,7 +91,7 @@ def calculate_sleep_seconds() -> int:
                     hour=next_hour,
                     minute=MINUTE_OFFSET,
                     second=SECOND_OFFSET,
-                    microsecond=SECOND_OFFSET,
+                    microsecond=MICROSECOND_OFFSET,
                 )
             else:
                 # Shouldn't happen, but handle edge case
@@ -98,7 +99,7 @@ def calculate_sleep_seconds() -> int:
                     hour=STARTING_HOUR,
                     minute=MINUTE_OFFSET,
                     second=SECOND_OFFSET,
-                    microsecond=SECOND_OFFSET,
+                    microsecond=MICROSECOND_OFFSET,
                 )
 
         delay = (next_run - now).total_seconds()
