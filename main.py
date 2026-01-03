@@ -12,7 +12,21 @@ from process_data import interpret_backtests
 from settings import get_settings
 
 
+def get_log_level(level_str: str) -> int:
+    """Convert string log level to logging constant."""
+    level_str = level_str.upper().strip().strip('"').strip("'")
+    return getattr(logging, level_str, logging.INFO)
+
+
 async def main() -> None:
+    # Initialize default logger before try block to prevent UnboundLocalError
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(stdout)],
+    )
+    logger = logging.getLogger(__name__)
+
     mongo_client = None
     structure_start_time, structure_end_time = None, None
     processing_start_time, processing_end_time = None, None
@@ -27,13 +41,15 @@ async def main() -> None:
             traces_sample_rate=settings["SENTRY_TRACE_RATE"],
         )
 
-        # Setup logger
+        # Reconfigure logger with user's LOG_LEVEL
+        log_level = get_log_level(settings["LOG_LEVEL"])
         logging.basicConfig(
-            level=settings["LOG_LEVEL"],
+            level=log_level,
             format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             handlers=[
                 logging.StreamHandler(stdout),
             ],
+            force=True,  # Force reconfiguration
         )
         logger = logging.getLogger(__name__)
 
