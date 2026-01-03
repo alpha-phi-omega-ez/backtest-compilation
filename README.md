@@ -54,10 +54,4 @@ uv run main.py
 
 ### Production
 
-In production the code is run in a docker container which can be found in the [packages for this repo](https://github.com/alpha-phi-omega-ez/backtest-compilation/pkgs/container/backtest-compilation). The docker container runs with always-restart flag and uses a bash script to determine when to run. It isn't meant to run constantly instead at set intervals based on the time of day. It runs more often during work hours and less often during off hours. An example of how to run the backtest-compilation docker container can be found in the [docker compose used in production](https://github.com/alpha-phi-omega-ez/deployment/blob/main/main-website-docker-compose.yml#L68-L86). 
-
-To run this script you just need to call `run.sh`
-
-```bash
-./run.sh
-```
+In production the code is run in a docker container which can be found in the [packages for this repo](https://github.com/alpha-phi-omega-ez/backtest-compilation/pkgs/container/backtest-compilation). The docker container runs [scheduler.py](scheduler.py) which handles when to run the main code.

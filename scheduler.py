@@ -2,8 +2,10 @@
 
 import asyncio
 import logging
+import os
 import sys
 from datetime import datetime, timedelta
+from pathlib import Path
 from time import sleep
 from zoneinfo import ZoneInfo
 
@@ -115,24 +117,35 @@ def main() -> None:
     """Main scheduler loop."""
     logger.info("Scheduler started (using Eastern Time)")
 
-    while True:
-        now = datetime.now(EASTERN_TZ)
-        current_hour = now.hour
-        current_time_str = now.strftime("%Y-%m-%d %H:%M:%S %Z")
-        logger.info(f"Current time: {current_time_str} (hour: {current_hour})")
+    # Write PID to file for healthcheck
+    pid_file = Path("/tmp/scheduler.pid")
+    pid_file.write_text(str(os.getpid()))
+    logger.info(f"PID {os.getpid()} written to {pid_file}")
 
-        if should_run():
-            run_main()
+    try:
+        while True:
+            now = datetime.now(EASTERN_TZ)
+            current_hour = now.hour
+            current_time_str = now.strftime("%Y-%m-%d %H:%M:%S %Z")
+            logger.info(f"Current time: {current_time_str} (hour: {current_hour})")
 
-        sleep_seconds = calculate_sleep_seconds()
-        next_run_time = datetime.now(EASTERN_TZ) + timedelta(seconds=sleep_seconds)
-        next_run_str = next_run_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-        sleep_hours = sleep_seconds / 3600
-        logger.info(
-            f"Sleeping for {sleep_seconds} seconds ({sleep_hours:.2f} hours). "
-            f"Next run at: {next_run_str}"
-        )
-        sleep(sleep_seconds)
+            if should_run():
+                run_main()
+
+            sleep_seconds = calculate_sleep_seconds()
+            next_run_time = datetime.now(EASTERN_TZ) + timedelta(seconds=sleep_seconds)
+            next_run_str = next_run_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+            sleep_hours = sleep_seconds / 3600
+            logger.info(
+                f"Sleeping for {sleep_seconds} seconds ({sleep_hours:.2f} hours). "
+                f"Next run at: {next_run_str}"
+            )
+            sleep(sleep_seconds)
+    finally:
+        # Clean up PID file on exit
+        if pid_file.exists():
+            pid_file.unlink()
+            logger.info(f"Removed PID file {pid_file}")
 
 
 if __name__ == "__main__":

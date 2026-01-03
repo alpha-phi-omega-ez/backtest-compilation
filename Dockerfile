@@ -18,6 +18,9 @@ RUN uv sync --frozen --no-cache --no-install-project
 # Use the 3.14 official docker hardened python image with debian trixie (v13)
 FROM dhi.io/python:3.14-debian13
 
+# Import pidcheck from microcheck for healthcheck
+COPY --from=ghcr.io/tarampampam/microcheck:1 /bin/pidcheck /bin/pidcheck
+
 # Copy the required files
 COPY process_data.py mongo.py main.py gsheet.py gdrive.py settings.py scheduler.py /app/
 
@@ -30,6 +33,10 @@ ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
+
+# Healthcheck using pidcheck to verify scheduler process is running
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=5s \
+    CMD ["pidcheck", "--file", "/tmp/scheduler.pid"]
 
 # Run Python scheduler that regulates when the package runs
 CMD ["python", "scheduler.py"]
