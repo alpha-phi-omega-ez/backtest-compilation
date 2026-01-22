@@ -9,8 +9,7 @@ on:
       - ".python-version"
       - "pyproject.toml"
 
-permissions:
-  contents: read
+permissions: read-all
 
 jobs:
   build:
