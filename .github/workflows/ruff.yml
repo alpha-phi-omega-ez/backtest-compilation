@@ -2,8 +2,7 @@ name: Ruff Lint Check
 
 on: [pull_request]
 
-permissions:
-  contents: read
+permissions: read-all
 
 jobs:
   ruff:
