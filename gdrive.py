@@ -52,7 +52,7 @@ class GoogleDriveClient:
             ) as f:
                 cache = json.load(f)
         except PermissionError:
-            self.logger.error("Permission error reading cache")
+            self.logger.exception("Permission error reading cache")
             return False
 
         check = cache == structure
@@ -82,7 +82,7 @@ class GoogleDriveClient:
 
             self.logger.info("Cache file updated successfully.")
         except PermissionError:
-            self.logger.error("Permission error writing to error cache")
+            self.logger.exception("Permission error writing to error cache")
 
     async def get_structure(self, fileid: str, sharedDrive: str) -> dict:
         """
