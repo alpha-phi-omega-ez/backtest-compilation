@@ -69,13 +69,16 @@ class GoogleDriveClient:
         """
 
         self.logger.info("Updating cache file with new structure.")
-        with open(
-            path.join(path.dirname(__file__), "cache", "structure.json"), "w"
-        ) as f:
-            json.dump(structure, f)
-            self.logger.debug(f"Cache file updated with {structure}")
+        try:
+            with open(
+                path.join(path.dirname(__file__), "cache", "structure.json"), "w"
+            ) as f:
+                json.dump(structure, f)
+                self.logger.debug(f"Cache file updated with {structure}")
 
-        self.logger.info("Cache file updated successfully.")
+            self.logger.info("Cache file updated successfully.")
+        except PermissionError:
+            self.logger.error("Permission error reading cache")
 
     async def get_structure(self, fileid: str, sharedDrive: str) -> dict:
         """
@@ -87,7 +90,7 @@ class GoogleDriveClient:
 
         self.logger.info("Getting structure of the backtest drive.")
         structure = await self.get_recursive_structure(fileid, sharedDrive)
-        self.logger.info("Comleted getting structure of the backtest drive.")
+        self.logger.info("Completed getting structure of the backtest drive.")
 
         self.logger.info("Checking if cache is up to date.")
         if await self.cache_check(structure):
