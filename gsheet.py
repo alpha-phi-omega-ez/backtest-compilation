@@ -89,10 +89,14 @@ class GoogleSheetClient:
             await self.update_error_cache(errors, invalid_filenames, crosslisted_output)
             return False
 
-        with open(
-            path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "r"
-        ) as f:
-            cache = json.load(f)
+        try:
+            with open(
+                path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "r"
+            ) as f:
+                cache = json.load(f)
+        except PermissionError:
+            self.logger.exception("Permission error reading cache (sheet_errors.json)")
+            return False
 
         check = (
             (cache["errors"] == errors)
@@ -129,13 +133,15 @@ class GoogleSheetClient:
         }
 
         self.logger.info("Updating cache file with new structure.")
-        with open(
-            path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "w"
-        ) as f:
-            json.dump(data, f)
-            self.logger.debug(f"Cache file updated with {data}")
-
-        self.logger.info("Cache file updated successfully.")
+        try:
+            with open(
+                path.join(path.dirname(__file__), "cache", "sheet_errors.json"), "w"
+            ) as f:
+                json.dump(data, f)
+                self.logger.debug(f"Cache file updated with {data}")
+            self.logger.info("Cache file updated successfully.")
+        except PermissionError:
+            self.logger.exception("Permission error writing cache (sheet_errors.json)")
 
     async def write_errors(
         self,
@@ -252,10 +258,14 @@ class GoogleSheetClient:
             await self.update_class_cache(all_classnames)
             return False
 
-        with open(
-            path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "r"
-        ) as f:
-            cache = json.load(f)
+        try:
+            with open(
+                path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "r"
+            ) as f:
+                cache = json.load(f)
+        except PermissionError:
+            self.logger.exception("Permission error reading cache (sheet_classes.json)")
+            return False
 
         check = cache == all_classnames
 
@@ -275,13 +285,15 @@ class GoogleSheetClient:
         """
 
         self.logger.info("Updating cache file with new class counts.")
-        with open(
-            path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "w"
-        ) as f:
-            json.dump(all_classnames, f)
-            self.logger.debug(f"Cache file updated with {all_classnames}")
-
-        self.logger.info("Cache file updated successfully.")
+        try:
+            with open(
+                path.join(path.dirname(__file__), "cache", "sheet_classes.json"), "w"
+            ) as f:
+                json.dump(all_classnames, f)
+                self.logger.debug(f"Cache file updated with {all_classnames}")
+            self.logger.info("Cache file updated successfully.")
+        except PermissionError:
+            self.logger.exception("Permission error writing cache (sheet_classes.json)")
 
     async def get_location(
         self,
