@@ -95,7 +95,7 @@ class GoogleSheetClient:
             ) as f:
                 cache = json.load(f)
         except PermissionError:
-            self.logger.exception("Permission error reading cache")
+            self.logger.exception("Permission error reading cache (sheet_errors.json)")
             return False
 
         check = (
@@ -141,7 +141,7 @@ class GoogleSheetClient:
                 self.logger.debug(f"Cache file updated with {data}")
             self.logger.info("Cache file updated successfully.")
         except PermissionError:
-            self.logger.exception("Permission error writing to error cache")
+            self.logger.exception("Permission error writing cache (sheet_errors.json)")
 
     async def write_errors(
         self,
@@ -264,7 +264,7 @@ class GoogleSheetClient:
             ) as f:
                 cache = json.load(f)
         except PermissionError:
-            self.logger.exception("Permission error reading cache")
+            self.logger.exception("Permission error reading cache (sheet_classes.json)")
             return False
 
         check = cache == all_classnames
@@ -293,7 +293,7 @@ class GoogleSheetClient:
                 self.logger.debug(f"Cache file updated with {all_classnames}")
             self.logger.info("Cache file updated successfully.")
         except PermissionError:
-            self.logger.exception("Permission error writing to class cache")
+            self.logger.exception("Permission error writing cache (sheet_classes.json)")
 
     async def get_location(
         self,
