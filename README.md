@@ -9,6 +9,13 @@ Install and setup [UV](https://docs.astral.sh/uv/getting-started/)
 uv sync
 ```
 
+### Unit tests
+
+```bash
+uv sync --group dev
+uv run pytest
+```
+
 ### Google Cloud Integration
 
 Note that this requires a Google Cloud project with permissions, which is annoying to set up.  
