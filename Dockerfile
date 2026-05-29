@@ -13,7 +13,7 @@ WORKDIR /app
 COPY uv.lock pyproject.toml /app/
 
 # Install the required packages
-RUN uv sync --frozen --no-cache --no-install-project
+RUN uv sync --frozen --no-cache --no-install-project --no-dev
 
 # Use the 3.14 official docker hardened python image with debian trixie (v13)
 FROM dhi.io/python:3.14-debian13

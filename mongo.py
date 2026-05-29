@@ -173,16 +173,15 @@ class MongoClient:
             self.logger.info(f"Added class names {classes_to_add}")
 
         if classes_to_remove:
-            await self.backtest_courses_collection.delete_many(
-                {"name": {"$in": classes_to_remove}}
-            )
-
             class_backtests_to_remove = set()
             async for item in self.backtest_courses_collection.find(
                 {"name": {"$in": classes_to_remove}}
             ):
                 class_backtests_to_remove.add(item["_id"])
 
+            await self.backtest_courses_collection.delete_many(
+                {"name": {"$in": classes_to_remove}}
+            )
             await self.backtest_collection.delete_many(
                 {"course_ids": {"$in": list(class_backtests_to_remove)}}
             )
