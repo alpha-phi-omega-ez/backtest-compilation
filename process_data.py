@@ -204,10 +204,27 @@ async def process_course(
     else:
         errors.append(f"Duplicate CLASS in {dptname}: {classnum}")
         logger.info(f"Duplicate CLASS in {dptname}: {classnum}")
-    classname = match.group(4)
+    course_title = match.group(4)
 
-    full_classname = dptname + "-" + classnum + " " + classname
+    full_classname = dptname + "-" + classnum + " " + course_title
     if full_classname not in all_classnames:
+        for existing_full, (dptname2, classnum2, _) in all_classnames.items():
+            existing_match = find_classname.search(existing_full)
+            if (
+                existing_match
+                and existing_match.group(4) == course_title
+                and dptname2 != dptname
+            ):
+                crosslisted_output.append(
+                    f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
+                    f"and {dptname}-{classnum}"
+                )
+                logger.warning(
+                    f"Crosslisted CLASS: {full_classname} is {dptname2}-{classnum2} "
+                    f"and {dptname}-{classnum}"
+                )
+                break
+
         all_classnames[full_classname] = [dptname, classnum, 0]
     else:
         dptname2, classnum2, _ = all_classnames[full_classname]
