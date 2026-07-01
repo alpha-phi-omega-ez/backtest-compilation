@@ -5,19 +5,19 @@ description = "Compile backtest data from google drive and update mongodb collec
 readme = "README.md"
 requires-python = "~=3.14.0"
 dependencies = [
-    "google-api-python-client>=2.197.0",
+    "google-api-python-client>=2.198.0",
     "google-auth-httplib2>=0.4.0",
-    "httplib2>=0.31.2",
+    "httplib2>=0.32.0",
     "google-auth-oauthlib>=1.4.0",
     "gspread>=6.1.4",
     "pymongo>=4.17.0",
     "python-dotenv>=1.0.1",
-    "sentry-sdk>=2.62.0",
+    "sentry-sdk>=2.64.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.0",
+    "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
 ]
 
