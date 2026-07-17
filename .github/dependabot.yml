@@ -9,6 +9,8 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "chore(dep uv)"
     groups:
       all-dependencies:
         patterns:
@@ -17,7 +19,19 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "chore(dep GH action)"
     groups:
       github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+       interval: "monthly"
+    commit-message:
+      prefix: "chore(dep docker)"
+    groups:
+      all-dependencies:
         patterns:
           - "*"
