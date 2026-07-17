@@ -29,13 +29,13 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the GHCR registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Log in to Docker Hub
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -43,7 +43,7 @@ jobs:
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@45b191481076e80d5734fec83fc5b651df3537cc
+        uses: docker/metadata-action@703896b4f30f62d53f5530a80bcdc589a3f702bc
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -54,7 +54,7 @@ jobs:
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@b99c92828ab902cd2c54088e778f547a66bf746f
+        uses: docker/build-push-action@cb941d0b895b09c17fa011d41c411b33c752cf28
         with:
           context: .
           push: true
